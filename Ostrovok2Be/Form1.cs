@@ -57,9 +57,6 @@ namespace Ostrovok2Be
         private void refreshbtn_Click(object sender, EventArgs e)
         {
 
-
-            Debug.WriteLine("test code mmmp");
-
         }
 
         public void TaskGetHotelGeneral(string value, int type=0,int runtype=0)
