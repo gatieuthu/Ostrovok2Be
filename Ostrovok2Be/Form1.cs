@@ -100,7 +100,7 @@ namespace Ostrovok2Be
             //----4. SAVE LOG
 
             process_lb.Text = "TASK: Done";
-         
+         Debug.WriteLine(" hehehe");
              
         }
 
