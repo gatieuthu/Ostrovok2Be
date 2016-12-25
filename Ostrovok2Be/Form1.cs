@@ -58,7 +58,7 @@ namespace Ostrovok2Be
         {
 
 
-            Debug.WriteLine("test code");
+            Debug.WriteLine("test code mmmp");
 
         }
 
