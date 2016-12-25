@@ -56,9 +56,9 @@ namespace Ostrovok2Be
 
         private void refreshbtn_Click(object sender, EventArgs e)
         {
-               
-           
 
+
+            Debug.WriteLine("test code");
 
         }
 
