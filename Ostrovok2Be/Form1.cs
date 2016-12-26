@@ -103,11 +103,15 @@ namespace Ostrovok2Be
 
                 foreach (var item in package.result)
                 {
+                    var tem =item.amenities.Select(c => c.amenities);
+                    var tem1 = tem.Select(c => c.FirstOrDefault());
+                    var tem2 = string.Join(",", tem1.ToArray());
+
                      var temMidleObject = new SupplierMidleObject()
                     {
                         SupplierOstIds=item.id,
                         Country_code=item.country_code,
-                        Images=item.images.ToString(),
+                        Images=JsonConvert.SerializeObject(item.images) ,
                         Thumbnail=item.thumbnail,
                         Adress_clean=item.clean_address,
                         Lat=item.latitude,
@@ -116,8 +120,8 @@ namespace Ostrovok2Be
                         Phone=item.phone, 
                         Email=item.email,
                         RegionId=item.region_id,
-                        AmenitiesEn=lang=="en"?item.amenities.ToString():"",
-                        AmenitiesRu=lang=="ru"?item.amenities.ToString():"",
+                        AmenitiesEn=lang=="en"? tem2 : "",
+                        AmenitiesRu=lang=="ru"? tem2 : "",
                         DescriptionEn=lang=="en"?item.description.ToString():"",
                         DescriptionRu = lang == "ru" ? item.description.ToString() : "",
                         CityEn=lang=="en"?item.city:"", 
@@ -139,7 +143,7 @@ namespace Ostrovok2Be
             //-----3.SAVE OBJECT TO EXCEL
 
             process_lb.Text = "TASK: Save Exelfile";
-            Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject, @"../../Raw/rawdata.xls");
+            Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject, @"../../Result/Raw/rawdata.xls");
             //----4. SAVE LOG
 
             process_lb.Text = "TASK: Done";
