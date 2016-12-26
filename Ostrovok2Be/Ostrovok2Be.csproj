@@ -77,6 +77,20 @@
     <Compile Include="Function\list2objbuilder.cs" />
     <Compile Include="Function\str2objbuilder.cs" />
     <Compile Include="Models\country.cs" />
+    <Compile Include="Models\getGeneral\amenity.cs" />
+    <Compile Include="Models\getGeneral\AuthoRegion.cs" />
+    <Compile Include="Models\getGeneral\Center.cs" />
+    <Compile Include="Models\getGeneral\debug.cs" />
+    <Compile Include="Models\getGeneral\GeneralHotelInfo.cs" />
+    <Compile Include="Models\getGeneral\GeneralPackage.cs" />
+    <Compile Include="Models\getGeneral\images.cs" />
+    <Compile Include="Models\getGeneral\image_roomgroup.cs" />
+    <Compile Include="Models\getGeneral\Matching.cs" />
+    <Compile Include="Models\getGeneral\Rating.cs" />
+    <Compile Include="Models\getGeneral\rating_detail.cs" />
+    <Compile Include="Models\getGeneral\ReviewBest.cs" />
+    <Compile Include="Models\getGeneral\RoomGroup.cs" />
+    <Compile Include="Models\MidleObject\SupplierMidleObject.cs" />
     <Compile Include="Models\SupplierOstrovok.cs" />
     <Compile Include="Models\SupplierRoomOstrovok.cs" />
     <Compile Include="Program.cs" />
@@ -108,7 +122,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Result\" />
+    <Folder Include="Result\Raw\" />
+    <Folder Include="Result\Result\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DLL\DocumentFormat.OpenXml.dll" />

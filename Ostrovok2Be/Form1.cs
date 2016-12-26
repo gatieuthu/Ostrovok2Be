@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Ostrovok2Be.Function;
 using Ostrovok2Be.Models;
+using Ostrovok2Be.Models.getFromOstrovok;
+using Ostrovok2Be.Models.MidleObject;
 
 namespace Ostrovok2Be
 {
@@ -59,7 +61,7 @@ namespace Ostrovok2Be
 
         }
 
-        public void TaskGetHotelGeneral(string value, int type=0,int runtype=0)
+        public void TaskGetHotelGeneral(string value, int type=0,int runtype=0,string lang="en")
         {
             process_lb.Text = "TASK: Get Hotel Info...";
             //type =0 get by region_id
@@ -77,23 +79,66 @@ namespace Ostrovok2Be
             var divedList = list2objbuilder.ListCreater(listHotelInRegion, 10);
             var listObj = new List<JToken>();
             var value_Track = 0;
+            var totalPackage = new List<GeneralPackage>();
             foreach (var tasklist in divedList)
             {
                 value_Track++;
                 var tempStr2Obj = new str2objbuilder(tasklist);
                 var allHotelInStr = tempStr2Obj.listIds2Object();
-                var result = getGeneralHotelInforByIds(allHotelInStr);
+                var result = getGeneralHotelInforByIds(allHotelInStr,"en");
                 listObj.Add(result);
                backgroundWorkerUpdate(value_Track, divedList.Count());
+               var temGenPackage = JsonConvert.DeserializeObject<GeneralPackage>(result);
+               totalPackage.Add(temGenPackage);
 
 
             }
             //----------------
 
             //----2.CREATE OBJECT
+            var ListMiddleObject = new List<SupplierMidleObject>();
+            foreach (var package in totalPackage)
+            {
+
+                foreach (var item in package.result)
+                {
+                     var temMidleObject = new SupplierMidleObject()
+                    {
+                        SupplierOstIds=item.id,
+                        Country_code=item.country_code,
+                        Images=item.images.ToString(),
+                        Thumbnail=item.thumbnail,
+                        Adress_clean=item.clean_address,
+                        Lat=item.latitude,
+                        Long=item.longitude,
+                        Kind=item.kind,
+                        Phone=item.phone, 
+                        Email=item.email,
+                        RegionId=item.region_id,
+                        AmenitiesEn=lang=="en"?item.amenities.ToString():"",
+                        AmenitiesRu=lang=="ru"?item.amenities.ToString():"",
+                        DescriptionEn=lang=="en"?item.description.ToString():"",
+                        DescriptionRu = lang == "ru" ? item.description.ToString() : "",
+                        CityEn=lang=="en"?item.city:"", 
+                        CityRu=lang=="ru"?item.city:"",
+                        CountryEn = lang == "en" ? item.country : "",
+                        CountryRu = lang == "ru" ? item.country : "",
+                        Policy_descriptionRu=lang=="ru"?item.policy_description:"",
+                        Policy_descriptionEn=lang=="en"?item.policy_description:"",
+                        SupplierOstNameEn=lang=="en"?item.name:"",
+                        SupplierOstNameRu=lang=="ru"?item.name:"",
+                       AddressEn=lang=="en"?item.address:"",
+                       AddressRu=lang=="ru"?item.address:""
+                    };
+                    ListMiddleObject.Add(temMidleObject);
+                }
+               
+            }
 
             //-----3.SAVE OBJECT TO EXCEL
 
+            process_lb.Text = "TASK: Save Exelfile";
+            Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject, @"../../Raw/rawdata.xls");
             //----4. SAVE LOG
 
             process_lb.Text = "TASK: Done";
@@ -148,10 +193,10 @@ namespace Ostrovok2Be
             
         }
         //--------------------
-        public JToken getGeneralHotelInforByIds( string listIds)
+        public string getGeneralHotelInforByIds( string listIds,string lang="en")
         {// link demo: https://1356:f5df4f22-1277-44a7-a7fc-56b5b2de93da@partner.ostrovok.ru/api/b2b/v2/hotel/list?data={"ids":["dong_khanh_hotel"],"lang":"en"}
             System.Threading.Thread.Sleep(timeIdle);
-            string api_getAllHotelByLocationText = @"https://partner.ostrovok.ru/api/b2b/v2/hotel/list?data={""ids"":[""" + listIds + @"""],""lang"":""en""}";
+            string api_getAllHotelByLocationText = @"https://partner.ostrovok.ru/api/b2b/v2/hotel/list?data={""ids"":[""" + listIds + @"""],""lang"":"""+lang+@"""}";
             CookieContainer myContainer = new CookieContainer();
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(api_getAllHotelByLocationText);
             request.Credentials = new NetworkCredential("1356", "f5df4f22-1277-44a7-a7fc-56b5b2de93da");
@@ -183,9 +228,7 @@ namespace Ostrovok2Be
         }
         private void startbtn_Click(object sender, EventArgs e)
         {
-            /*var temp=  getAllHotelByText("vietnam");
-            Begodi.CreateExcelFile.CreateExcelDocument(temp,"../../Result/data.xls");*/
-            TaskGetHotelGeneral("3620", 0, 0);
+            TaskGetHotelGeneral("3620", 0, 0,"en");
         }
 
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
