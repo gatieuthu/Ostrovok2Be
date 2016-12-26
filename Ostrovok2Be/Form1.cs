@@ -139,7 +139,7 @@ namespace Ostrovok2Be
             //-----3.SAVE OBJECT TO EXCEL
 
             process_lb.Text = "TASK: Save Exelfile";
-            Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject, @"../../Raw/rawdata.xls");
+            Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject, @"../../Result/Raw/rawdata.xls");
             //----4. SAVE LOG
 
             process_lb.Text = "TASK: Done";
