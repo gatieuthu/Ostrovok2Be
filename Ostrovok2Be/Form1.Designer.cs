@@ -62,7 +62,7 @@
             // 
             // startbtn
             // 
-            this.startbtn.Location = new System.Drawing.Point(818, 297);
+            this.startbtn.Location = new System.Drawing.Point(726, 301);
             this.startbtn.Name = "startbtn";
             this.startbtn.Size = new System.Drawing.Size(75, 50);
             this.startbtn.TabIndex = 0;
@@ -98,7 +98,7 @@
             // 
             // refreshbtn
             // 
-            this.refreshbtn.Location = new System.Drawing.Point(818, 182);
+            this.refreshbtn.Location = new System.Drawing.Point(726, 191);
             this.refreshbtn.Name = "refreshbtn";
             this.refreshbtn.Size = new System.Drawing.Size(75, 50);
             this.refreshbtn.TabIndex = 0;
@@ -108,12 +108,12 @@
             // 
             // countrylist
             // 
+            this.countrylist.CheckOnClick = true;
             this.countrylist.FormattingEnabled = true;
             this.countrylist.Location = new System.Drawing.Point(28, 37);
             this.countrylist.Name = "countrylist";
             this.countrylist.Size = new System.Drawing.Size(120, 154);
             this.countrylist.TabIndex = 5;
-            this.countrylist.MouseClick += new System.Windows.Forms.MouseEventHandler(this.countrylist_MouseClick);
             // 
             // pBar
             // 
@@ -202,7 +202,7 @@
             // 
             // btn_Pause
             // 
-            this.btn_Pause.Location = new System.Drawing.Point(818, 119);
+            this.btn_Pause.Location = new System.Drawing.Point(726, 128);
             this.btn_Pause.Name = "btn_Pause";
             this.btn_Pause.Size = new System.Drawing.Size(75, 57);
             this.btn_Pause.TabIndex = 9;
@@ -214,7 +214,7 @@
             // 
             // btn_continue
             // 
-            this.btn_continue.Location = new System.Drawing.Point(818, 56);
+            this.btn_continue.Location = new System.Drawing.Point(726, 65);
             this.btn_continue.Name = "btn_continue";
             this.btn_continue.Size = new System.Drawing.Size(75, 57);
             this.btn_continue.TabIndex = 9;
@@ -279,7 +279,7 @@
             // 
             // btn_Exit
             // 
-            this.btn_Exit.Location = new System.Drawing.Point(818, 353);
+            this.btn_Exit.Location = new System.Drawing.Point(726, 357);
             this.btn_Exit.Name = "btn_Exit";
             this.btn_Exit.Size = new System.Drawing.Size(75, 50);
             this.btn_Exit.TabIndex = 0;
@@ -310,9 +310,9 @@
             this.gb_select.Controls.Add(this.label2);
             this.gb_select.Controls.Add(this.label3);
             this.gb_select.Controls.Add(this.tb_listIds);
-            this.gb_select.Location = new System.Drawing.Point(39, 228);
+            this.gb_select.Location = new System.Drawing.Point(15, 192);
             this.gb_select.Name = "gb_select";
-            this.gb_select.Size = new System.Drawing.Size(760, 220);
+            this.gb_select.Size = new System.Drawing.Size(696, 220);
             this.gb_select.TabIndex = 14;
             this.gb_select.TabStop = false;
             this.gb_select.Text = "Select Box";
@@ -321,7 +321,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(976, 516);
+            this.ClientSize = new System.Drawing.Size(844, 516);
             this.Controls.Add(this.gb_select);
             this.Controls.Add(this.group_LangSelect);
             this.Controls.Add(this.lb_Info);
@@ -359,7 +359,6 @@
         private System.Windows.Forms.Button refreshbtn;
         private System.Windows.Forms.CheckedListBox countrylist;
         private System.Windows.Forms.ProgressBar pBar;
-        internal System.ComponentModel.BackgroundWorker bgWorker;
         private System.Windows.Forms.Label process_lb;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton radioButton2;
@@ -377,6 +376,7 @@
         private System.Windows.Forms.TextBox tb_listIds;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox gb_select;
+        internal System.ComponentModel.BackgroundWorker bgWorker;
     }
 }
 

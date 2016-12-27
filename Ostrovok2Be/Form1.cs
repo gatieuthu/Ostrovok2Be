@@ -82,8 +82,8 @@ namespace Ostrovok2Be
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             
-          /*  pBar.Value = Math.Min(e.ProgressPercentage, 100);
-            pBar.Update();*/
+           pBar.Value = Math.Min(e.ProgressPercentage, 100);
+            pBar.Update();
         }
         private void ExitProgram(object sender, EventArgs e)
         {
@@ -309,7 +309,6 @@ namespace Ostrovok2Be
             {
                 bool result = false;
                 //----------------Build list of ObjectLog
-               
                 var allItemInLog = new List<LogObject>();
                 var hasit = false;
                 hasit = List_Ids.Contains(ids);
@@ -569,13 +568,7 @@ namespace Ostrovok2Be
         }
         #endregion
 
-        private void countrylist_MouseClick(object sender, MouseEventArgs e)
-        {
-            var selecteditem=countrylist.SelectedItem;
-            
-            /*MessageBox.Show(selecteditem.ToString());*/
-            /*countrylist.SetItemChecked(countrylist.SetItemChecked);*/
-        }
+     
 
       
 
