@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="ExtCode\ExcelExtLib.cs" />
     <Compile Include="ExtCode\IO.cs" />
+    <Compile Include="ExtCode\MessageBoxManager.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -87,6 +88,7 @@
     <Compile Include="Models\getGeneral\rating_detail.cs" />
     <Compile Include="Models\getGeneral\ReviewBest.cs" />
     <Compile Include="Models\getGeneral\RoomGroup.cs" />
+    <Compile Include="Models\LogObject\Log.cs" />
     <Compile Include="Models\MidleObject\SupplierMidleObject.cs" />
     <Compile Include="Models\SupplierOstrovok.cs" />
     <Compile Include="Models\SupplierRoomOstrovok.cs" />
@@ -119,6 +121,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Result\Log\" />
     <Folder Include="Result\Raw\" />
     <Folder Include="Result\Result\" />
   </ItemGroup>

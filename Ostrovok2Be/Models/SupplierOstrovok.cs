@@ -24,7 +24,7 @@ namespace Ostrovok2Be.Models
         public string Policy_descriptionRu { get; set; }
 
         public string Policy_descriptionEn { get; set; }
-
+        
         public string DescriptionEn { get; set; }
 
         public string DescriptionRu { get; set; }
