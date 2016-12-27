@@ -292,7 +292,7 @@
             this.tb_listIds.Location = new System.Drawing.Point(169, 35);
             this.tb_listIds.Multiline = true;
             this.tb_listIds.Name = "tb_listIds";
-            this.tb_listIds.Size = new System.Drawing.Size(512, 169);
+            this.tb_listIds.Size = new System.Drawing.Size(421, 169);
             this.tb_listIds.TabIndex = 12;
             // 
             // label3
