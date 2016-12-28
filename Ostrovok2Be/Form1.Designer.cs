@@ -108,6 +108,7 @@
             // 
             // countrylist
             // 
+            this.countrylist.CheckOnClick = true;
             this.countrylist.FormattingEnabled = true;
             this.countrylist.Location = new System.Drawing.Point(28, 37);
             this.countrylist.Name = "countrylist";

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.OleDb;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -10,6 +13,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Excel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Ostrovok2Be.Function;
@@ -27,8 +31,11 @@ namespace Ostrovok2Be
         private static int runmode;
         public static List<string> List_Ids = new List<string>();
         public static string  pathLog = @"../../Result/Log/Log.xls";
-        public static string currentIds = "";
+        public  string currentIds = "";
         public static bool pause = false;
+        public ConcurrentBag<Task> AllTanks = new ConcurrentBag<Task>();
+        public ConcurrentBag<string> allIdsDone = new ConcurrentBag<string>();
+        public ConcurrentBag<LogObject> AllLogs = new ConcurrentBag<LogObject>();
 
         //--------- COMPONENT EVENT---------------------------------------------------
 
@@ -43,10 +50,35 @@ namespace Ostrovok2Be
             timeIdle = Int32.Parse(idletime.Text);
             runmode = 0;
             string locationlist = File.ReadAllText("../../Object/countrylist.txt");
+            //------------------------
+            if (File.Exists(pathLog))
+            {
+                  FileStream stream = File.Open(pathLog, FileMode.Open, FileAccess.Read);
+            IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+            excelReader.IsFirstRowAsColumnNames = true;
+            DataSet result1 = excelReader.AsDataSet();
+            IEnumerable<LogObject> allItemLog = from row in result1.Tables["Table1"].AsEnumerable()
+                                                select new LogObject()
+                                                {
+                                                    Ids = Convert.ToString(row["Ids"]),
+                                                    Done = Convert.ToString(row["Done"]),
+                                                    DateCreated = Convert.ToString(row["DateCreated"]),
+                                                    DateUpdated = Convert.ToString(row["DateUpdated"])
+                                                };
+                if (allItemLog.Count() > 0)
+                {
+                    foreach (var item in allItemLog)
+                    {
+                        AllLogs.Add(item);
+                    }
+                    
+                }
+            }
+          
+            //-----------------------
             using (WebClient wc = new WebClient())
             {
-               
-                wc.Encoding = System.Text.Encoding.UTF8;
+               wc.Encoding = System.Text.Encoding.UTF8;
                 var country = JsonConvert.DeserializeObject<List<country>>(locationlist);
                 //--- clear checkbox list
                 countrylist.Items.Clear();
@@ -66,16 +98,19 @@ namespace Ostrovok2Be
 
 
         }
-        private async void startbtn_Click(object sender, EventArgs e)
+        private  void startbtn_Click(object sender, EventArgs e)
         {
            
             var allLangSelected = getAllLangSelected();
             var allIds = ListIdsCreator();
             foreach (var lang in allLangSelected)
             {
-            Task taskA = Task.Factory.StartNew(() =>  TaskGetHotelGeneral(allIds, 0, runmode, lang.ToLower()));
-                
+           
+                Task taskA = Task.Factory.StartNew(() =>  TaskGetHotelGeneral(allIds, 0, runmode, lang.ToLower()));
+                AllTanks.Add(taskA);
+
             }
+            
         }
 
 
@@ -96,11 +131,13 @@ namespace Ostrovok2Be
         private void btn_Pause_Click(object sender, EventArgs e)
         {
             //check file Log exist
+
                 pause = true;
+            Task.WaitAll(AllTanks.ToArray());
+            Debug.WriteLine(" Currentids in Pause Function: "+currentIds);
             if (File.Exists(pathLog))
             {
                 //--- Hoi update hay tao moi
-
 
                 string message = "Log file was exited";
                 string caption = "Please confirm";
@@ -121,7 +158,7 @@ namespace Ostrovok2Be
                 if (result == DialogResult.Abort)
                 {
                     //UpdateLog
-                    UpdateLog(currentIds);
+                    UpdateLog();
                 }
 
             }
@@ -134,54 +171,19 @@ namespace Ostrovok2Be
 
         //------------METHODS-------------------------------------------------------------------------------------------
 
-        private bool UpdateLog(string ids)
+        private void UpdateLog()
         {
-            if (string.IsNullOrEmpty(ids))
-                return false;
-            var result = false;
-            //get Content Log and bind to a datatable
-            var dt = Begodi.IO.ReadExcelToDataTable(pathLog);
-            //----- Convert to LogObject:
-
-            IEnumerable<LogObject> allItemLog=from row in dt.AsEnumerable()
-                            select new LogObject()
-                         {
-                             Ids = Convert.ToString(row["Ids"]),
-                             Done = Convert.ToString(row["Name"]),
-                             DateCreated = Convert.ToString(row["LinkUrl"]),
-                             DateUpdated = Convert.ToString(row["ImageUrl"])
-                         };
-            //------ Kiem tra item co trong list khong
-            var hasIt = false;
-
-            if (allItemLog.Count() > 0)
+            if (allIdsDone.Count() > 0)
             {
-                hasIt = allItemLog.Select(c => c.Ids).Contains(ids);
-
-            }
-            var copyofAllLog = new List<LogObject>();
-            if (hasIt)
-            {
-                foreach (var item in allItemLog)
+                foreach (var doneItem in allIdsDone)
                 {
-                    item.Done = "1";
-
-                    copyofAllLog.Add(item);
-                    //createNewLog()
-                    Begodi.CreateExcelFile.CreateExcelDocument(copyofAllLog, pathLog);
-                    //-----------
-                    if (item.Ids == ids)
-                    {
-                        break;
-                    }
+                    AllLogs.Where(c => c.Ids == doneItem).FirstOrDefault().Done = "1";
                 }
+               
             }
-            else
-            {
-                return false;
-            }
-            //-------------------
-            return result;
+           //------- Create a New Log
+            Begodi.CreateExcelFile.CreateExcelDocument(AllLogs.ToList(), pathLog);
+
         }
         private List<string> getAllLangSelected()
         {
@@ -232,6 +234,10 @@ namespace Ostrovok2Be
 
 
             }
+            //----- The last Ids
+            if (totalPackage.Count()>0)
+            currentIds = totalPackage.LastOrDefault().result.LastOrDefault().id;
+            Debug.WriteLine(" The last ids: "+currentIds +"-------------------------------------");
            //----2.CREATE OBJECT
             var ListMiddleObject = new List<SupplierMidleObject>();
             foreach (var package in totalPackage)
@@ -290,7 +296,7 @@ namespace Ostrovok2Be
             /*process_lb.Text = "TASK: Save Exelfile";*/
             Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject, @"../../Result/Raw/raw_GeneralData.xls");
             //----4. SAVE LOG
-
+            
             /*process_lb.Text = "TASK: Done";*/
            
 
@@ -316,8 +322,7 @@ namespace Ostrovok2Be
                 bool reach = false;
                 foreach (var item in List_Ids)
                 {
-                    if (item == ids)
-                        reach = true;
+                   
                     if (reach == false&&hasit==true)
                     {
                         allItemInLog.Add(new LogObject()
@@ -339,7 +344,10 @@ namespace Ostrovok2Be
                         });
                         
                     }
-                   
+
+                    if (item == ids)
+                        reach = true;
+
                 }
                 if (allItemInLog.Count() > 0)
                 {
@@ -422,19 +430,38 @@ namespace Ostrovok2Be
         //--------------------
         public string getGeneralHotelInforByIds(string listIds, string lang = "en")
         {// link demo: https://1356:f5df4f22-1277-44a7-a7fc-56b5b2de93da@partner.ostrovok.ru/api/b2b/v2/hotel/list?data={"ids":["dong_khanh_hotel"],"lang":"en"}
-            System.Threading.Thread.Sleep(timeIdle);
-            string api_getAllHotelByLocationText = @"https://partner.ostrovok.ru/api/b2b/v2/hotel/list?data={""ids"":[""" + listIds + @"""],""lang"":""" + lang + @"""}";
-            CookieContainer myContainer = new CookieContainer();
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(api_getAllHotelByLocationText);
-            request.Credentials = new NetworkCredential("1356", "f5df4f22-1277-44a7-a7fc-56b5b2de93da");
-            request.CookieContainer = myContainer;
-            request.PreAuthenticate = true;
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            StreamReader reader = new StreamReader(response.GetResponseStream());
-            string result = reader.ReadLine();
-
-            //return JObject.Parse(result)["result"];
-            return result;
+            if (!string.IsNullOrEmpty(listIds))
+            {
+                System.Threading.Thread.Sleep(timeIdle);
+                string api_getAllHotelByLocationText =
+                    @"https://partner.ostrovok.ru/api/b2b/v2/hotel/list?data={""ids"":[""" + listIds +
+                    @"""],""lang"":""" + lang + @"""}";
+                CookieContainer myContainer = new CookieContainer();
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(api_getAllHotelByLocationText);
+                request.Credentials = new NetworkCredential("1356", "f5df4f22-1277-44a7-a7fc-56b5b2de93da");
+                request.CookieContainer = myContainer;
+                request.PreAuthenticate = true;
+                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+                string result = reader.ReadLine();
+                if (listIds.Contains(","))
+                {
+                    foreach (var item in listIds.Split(','))
+                    {
+                        allIdsDone.Add(item);
+                    }
+                }
+                else
+                {
+                    allIdsDone.Add(listIds);
+                }
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+          
         }
         //---- check rate cũng tương tự:
 
