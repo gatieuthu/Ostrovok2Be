@@ -33,7 +33,7 @@ namespace Ostrovok2Be
         public static string  pathLog = @"../../Result/Log/Log.xls";
         public  string currentIds = "";
         public static bool pause = false;
-        public ConcurrentBag<Task> AllTanks = new ConcurrentBag<Task>();
+        public ConcurrentBag<Task> AllTasks = new ConcurrentBag<Task>();
         public ConcurrentBag<string> allIdsDone = new ConcurrentBag<string>();
         public ConcurrentBag<LogObject> AllLogs = new ConcurrentBag<LogObject>();
 
@@ -106,9 +106,9 @@ namespace Ostrovok2Be
             foreach (var lang in allLangSelected)
             {
            
-                Task taskA = Task.Factory.StartNew(() =>  TaskGetHotelGeneral(allIds, 0, runmode, lang.ToLower()));
-                AllTanks.Add(taskA);
-
+                Task task = new Task(() =>  TaskGetHotelGeneral(allIds, 0, runmode, lang.ToLower()));
+                AllTasks.Add(task);
+                task.Start();
             }
             
         }
@@ -133,7 +133,7 @@ namespace Ostrovok2Be
             //check file Log exist
 
                 pause = true;
-            Task.WaitAll(AllTanks.ToArray());
+           // Task.WaitAll(AllTasks.ToArray());
             Debug.WriteLine(" Currentids in Pause Function: "+currentIds);
             if (File.Exists(pathLog))
             {
