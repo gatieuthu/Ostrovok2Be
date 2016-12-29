@@ -125,7 +125,7 @@ namespace Ostrovok2Be
             
         }
 
-        }
+       
         
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -154,7 +154,7 @@ namespace Ostrovok2Be
             //check file Log exist
 
                 pause = true;
-            Task.WaitAll(AllTanks.ToArray());
+            Task.WaitAll(AllTasks.ToArray());
             Debug.WriteLine(" Currentids in Pause Function: "+currentIds);
             if (File.Exists(pathLog))
             {
