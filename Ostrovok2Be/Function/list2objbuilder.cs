@@ -1,15 +1,13 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Ostrovok2Be.Function
 {
     public class list2objbuilder
     {
-        public static List<List<string>> ListCreater(List<string> input,int n)
+        public static List<List<string>> ListCreator(List<string> input,int n)
         {
             if (input != null)
             {
