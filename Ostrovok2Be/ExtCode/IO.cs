@@ -215,9 +215,7 @@ namespace Begodi
 
 			OleDbConnection _oleConn = new OleDbConnection(connectionString);
 			_oleConn.Open();
-
 			OleDbCommand _oleCmdSelect = new OleDbCommand(sql, _oleConn);
-
 			OleDbDataAdapter oleAdapter = new OleDbDataAdapter();
 			oleAdapter.SelectCommand = _oleCmdSelect;
 			DataTable dt = new DataTable();
@@ -226,7 +224,6 @@ namespace Begodi
 			oleAdapter.Dispose();
 			_oleConn.Close();
 			_oleConn.Dispose();
-
 			if (SkippingLines > 0 && dt.Rows.Count >= SkippingLines)
 			{
 				for (int i = 0; i < SkippingLines; i++)
