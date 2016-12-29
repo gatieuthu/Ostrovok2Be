@@ -41,7 +41,6 @@
             this.process_lb = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rd_Check_Update = new System.Windows.Forms.RadioButton();
-            this.rd_Check = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.rdAuto = new System.Windows.Forms.RadioButton();
             this.btn_Pause = new System.Windows.Forms.Button();
@@ -118,7 +117,7 @@
             // 
             // pBar
             // 
-            this.pBar.Location = new System.Drawing.Point(27, 478);
+            this.pBar.Location = new System.Drawing.Point(15, 420);
             this.pBar.Name = "pBar";
             this.pBar.Size = new System.Drawing.Size(322, 23);
             this.pBar.TabIndex = 6;
@@ -132,7 +131,7 @@
             // process_lb
             // 
             this.process_lb.AutoSize = true;
-            this.process_lb.Location = new System.Drawing.Point(26, 459);
+            this.process_lb.Location = new System.Drawing.Point(14, 401);
             this.process_lb.Name = "process_lb";
             this.process_lb.Size = new System.Drawing.Size(71, 13);
             this.process_lb.TabIndex = 7;
@@ -141,12 +140,11 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.rd_Check_Update);
-            this.groupBox1.Controls.Add(this.rd_Check);
             this.groupBox1.Controls.Add(this.radioButton2);
             this.groupBox1.Controls.Add(this.rdAuto);
             this.groupBox1.Location = new System.Drawing.Point(194, 25);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(166, 160);
+            this.groupBox1.Size = new System.Drawing.Size(166, 125);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Run mode";
@@ -154,31 +152,19 @@
             // rd_Check_Update
             // 
             this.rd_Check_Update.AutoSize = true;
-            this.rd_Check_Update.Location = new System.Drawing.Point(39, 131);
+            this.rd_Check_Update.Location = new System.Drawing.Point(39, 80);
             this.rd_Check_Update.Name = "rd_Check_Update";
-            this.rd_Check_Update.Size = new System.Drawing.Size(94, 17);
+            this.rd_Check_Update.Size = new System.Drawing.Size(87, 17);
             this.rd_Check_Update.TabIndex = 3;
-            this.rd_Check_Update.Text = "Check &Update";
+            this.rd_Check_Update.Text = "Update Price";
             this.rd_Check_Update.UseVisualStyleBackColor = true;
             this.rd_Check_Update.MouseLeave += new System.EventHandler(this.rd_Check_Update_MouseLeave);
             this.rd_Check_Update.MouseHover += new System.EventHandler(this.rd_Check_Update_MouseHover);
             // 
-            // rd_Check
-            // 
-            this.rd_Check.AutoSize = true;
-            this.rd_Check.Location = new System.Drawing.Point(39, 95);
-            this.rd_Check.Name = "rd_Check";
-            this.rd_Check.Size = new System.Drawing.Size(56, 17);
-            this.rd_Check.TabIndex = 2;
-            this.rd_Check.Text = "Check";
-            this.rd_Check.UseVisualStyleBackColor = true;
-            this.rd_Check.MouseLeave += new System.EventHandler(this.rd_Check_MouseLeave);
-            this.rd_Check.MouseHover += new System.EventHandler(this.rd_Check_MouseHover);
-            // 
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(39, 57);
+            this.radioButton2.Location = new System.Drawing.Point(39, 51);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(70, 17);
             this.radioButton2.TabIndex = 1;
@@ -273,7 +259,7 @@
             this.group_LangSelect.Controls.Add(this.cb_En);
             this.group_LangSelect.Location = new System.Drawing.Point(389, 50);
             this.group_LangSelect.Name = "group_LangSelect";
-            this.group_LangSelect.Size = new System.Drawing.Size(200, 100);
+            this.group_LangSelect.Size = new System.Drawing.Size(120, 100);
             this.group_LangSelect.TabIndex = 11;
             this.group_LangSelect.TabStop = false;
             this.group_LangSelect.Text = "Select Language";
@@ -311,7 +297,7 @@
             this.gb_select.Controls.Add(this.label2);
             this.gb_select.Controls.Add(this.label3);
             this.gb_select.Controls.Add(this.tb_listIds);
-            this.gb_select.Location = new System.Drawing.Point(39, 228);
+            this.gb_select.Location = new System.Drawing.Point(15, 165);
             this.gb_select.Name = "gb_select";
             this.gb_select.Size = new System.Drawing.Size(760, 220);
             this.gb_select.TabIndex = 14;
@@ -322,7 +308,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(976, 516);
+            this.ClientSize = new System.Drawing.Size(976, 456);
             this.Controls.Add(this.gb_select);
             this.Controls.Add(this.group_LangSelect);
             this.Controls.Add(this.lb_Info);
@@ -366,7 +352,6 @@
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton rdAuto;
         private System.Windows.Forms.RadioButton rd_Check_Update;
-        private System.Windows.Forms.RadioButton rd_Check;
         private System.Windows.Forms.Button btn_Pause;
         private System.Windows.Forms.Button btn_continue;
         private System.Windows.Forms.Label lb_Info;

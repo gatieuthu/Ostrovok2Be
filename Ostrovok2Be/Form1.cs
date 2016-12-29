@@ -19,23 +19,29 @@ using Newtonsoft.Json.Linq;
 using Ostrovok2Be.Function;
 using Ostrovok2Be.Models;
 using Ostrovok2Be.Models.getFromOstrovok;
+using Ostrovok2Be.Models.getRates;
 using Ostrovok2Be.Models.LogObject;
 using Ostrovok2Be.Models.MidleObject;
+using Ostrovok2Be.RequestType;
 
 namespace Ostrovok2Be
 {
     public partial class Form1 : Form
     {
         //-------------DECLARE AREA--------------
-        private static int timeIdle;
-        private static int runmode;
+        public static int timeIdle=1000;
+        public static int runmode;
         public static List<string> List_Ids = new List<string>();
         public static string  pathLog = @"../../Result/Log/Log.xls";
         public  string currentIds = "";
         public static bool pause = false;
-        public ConcurrentBag<Task> AllTanks = new ConcurrentBag<Task>();
+        public ConcurrentBag<Task> AllTasks = new ConcurrentBag<Task>();
         public ConcurrentBag<string> allIdsDone = new ConcurrentBag<string>();
         public ConcurrentBag<LogObject> AllLogs = new ConcurrentBag<LogObject>();
+        public static int idsPerUnit = 10;
+        public static List<string> AllCurrencyType =new List<string>(new string []{"VND","USD","RUB","EUR"});
+        public static string checkInDate;
+        public static string checkOutDate;
 
         //--------- COMPONENT EVENT---------------------------------------------------
 
@@ -46,15 +52,20 @@ namespace Ostrovok2Be
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //--- set the time between 2 connections:
+             //-----------Set  CheckIN and Checkout
+            checkInDate = "2017-05-30";
+            checkOutDate = "2017-06-25";
+
+           //--- set the time between 2 connections:
             timeIdle = Int32.Parse(idletime.Text);
             runmode = 0;
             string locationlist = File.ReadAllText("../../Object/countrylist.txt");
             //------------------------
             if (File.Exists(pathLog))
             {
-                  FileStream stream = File.Open(pathLog, FileMode.Open, FileAccess.Read);
+            FileStream stream = File.Open(pathLog, FileMode.Open, FileAccess.Read);
             IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                
             excelReader.IsFirstRowAsColumnNames = true;
             DataSet result1 = excelReader.AsDataSet();
             IEnumerable<LogObject> allItemLog = from row in result1.Tables["Table1"].AsEnumerable()
@@ -89,7 +100,8 @@ namespace Ostrovok2Be
                     ctrlist.Add(item.value);
                 }
             }
-            ListIdsCreator();
+            
+            Console.WriteLine(" ids count:    " + List_Ids.Count());
 
         }
 
@@ -105,15 +117,59 @@ namespace Ostrovok2Be
             var allIds = ListIdsCreator();
             foreach (var lang in allLangSelected)
             {
-           
                 Task taskA = Task.Factory.StartNew(() =>  TaskGetHotelGeneral(allIds, 0, runmode, lang.ToLower()));
-                AllTanks.Add(taskA);
-
+                AllTasks.Add(taskA);
             }
             
         }
 
+        public void Taskcreator()
+        {
+           // ListIDS, LIST Lang, RunMode, List Currency
+            //Get all lang Selected.
+            ListIdsCreator();
+         
+            var allLangSelected = getAllLangSelected();
+            var allIds = ListIdsCreator();
+            List<RatesPackage> temp = new List<RatesPackage>();
+            var allGroup = list2objbuilder.ListCreator(List_Ids, idsPerUnit);
+            foreach (var itemGroup in allGroup)
+                   {
+                                foreach (var langItem in allLangSelected)
+                                {
+                                    List<Task> allTaskInGroupIds = new List<Task>();
+                                        var HotelInStr = new str2objbuilder(itemGroup).listIds2Object();
+                                        Task<string> getGeneral = new Task<string>(() => GetGeneral.getGeneralHotelInforByIds(HotelInStr, langItem));
+                                        getGeneral.Start();
+                                        var result_getGeneral = getGeneral.Result;
+                                    List<string> result_getRates = new List<string>();
+                                    List<RatesPackage> getRatesObject = new List<RatesPackage>();
+                                        allTaskInGroupIds.Add(getGeneral);
+                                    foreach (var currencyItem in AllCurrencyType)
+                                    {
+                                        //Request cac loai tien te.
+                                        Task<string> getRatePackage = new Task<string>(() => GetRate.getRateHotelInforByIds(HotelInStr,checkInDate,checkOutDate, langItem));
+                                        getRatePackage.Start();
+                                        allTaskInGroupIds.Add(getRatePackage);
+                                        result_getRates.Add(getRatePackage.Result);
+                                    }
+                                    //-----------DATA
+                                    var allTaskInArray = allTaskInGroupIds.ToArray();
+                                    if (allTaskInArray.Length>0)
+                                        Task.WaitAll(allTaskInArray);
 
+                                    //---------------Map Object
+                                    var temGenPackage = JsonConvert.DeserializeObject<GeneralPackage>(result_getGeneral);
+                                    foreach (var item in result_getRates)
+                                    {
+                                        getRatesObject.Add(JsonConvert.DeserializeObject<RatesPackage>(item));
+                                    }
+
+                                }
+                    }
+
+        }
+        
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             
@@ -125,20 +181,27 @@ namespace Ostrovok2Be
             this.Close();
         }
         private void btn_continue_Click(object sender, EventArgs e)
-        {
+        { 
             ListIdsCreator();
+           /* Debug.WriteLine(List_Ids.Count());
+           
+            foreach (var itemGroup in list2objbuilder.ListCreator(List_Ids, idsPerUnit))
+            {
+                var temp1= new str2objbuilder(itemGroup).listIds2Object();
+                var temp = GetRate.getRateHotelInforByIds(temp1,checkInDate, checkOutDate,"en" );
+            }*/
+            Taskcreator();
         }
         private void btn_Pause_Click(object sender, EventArgs e)
         {
             //check file Log exist
 
                 pause = true;
-            Task.WaitAll(AllTanks.ToArray());
+            Task.WaitAll(AllTasks.ToArray());
             Debug.WriteLine(" Currentids in Pause Function: "+currentIds);
             if (File.Exists(pathLog))
             {
                 //--- Hoi update hay tao moi
-
                 string message = "Log file was exited";
                 string caption = "Please confirm";
                 MessageBoxButtons buttons = MessageBoxButtons.AbortRetryIgnore;
@@ -208,14 +271,12 @@ namespace Ostrovok2Be
         public void TaskGetHotelGeneral(List<string> allIds, int type = 0, int runtype = 0, string lang = "en")
         {
            /* process_lb.Text = "TASK: Get Hotel Info...";*/
-
-           
             //type =0 get by region_id
          
           
             //--- STARTING TASK        
             //---1. GET VALUE FROM API
-            var divedList = list2objbuilder.ListCreater(allIds, 10);
+            var divedList = list2objbuilder.ListCreator(allIds, 10);
             var listObj = new List<JToken>();
             var value_Track = 0;
             var totalPackage = new List<GeneralPackage>();
@@ -226,7 +287,7 @@ namespace Ostrovok2Be
                 value_Track++;
                 var tempStr2Obj = new str2objbuilder(tasklist);
                 var allHotelInStr = tempStr2Obj.listIds2Object();
-                var result = getGeneralHotelInforByIds(allHotelInStr, "en");
+                var result = GetGeneral.getGeneralHotelInforByIds(allHotelInStr, "en");
                 listObj.Add(result);
                 backgroundWorkerUpdate(value_Track, divedList.Count());
                 var temGenPackage = JsonConvert.DeserializeObject<GeneralPackage>(result);
@@ -368,6 +429,7 @@ namespace Ostrovok2Be
         #region Method for requesting..
         public List<string> getAllHotelByText(string textValue)
         {
+            Trace.WriteLine(" Downloading: " + textValue);
              if (string.IsNullOrEmpty(textValue))
                 return null;
                try
@@ -397,6 +459,8 @@ namespace Ostrovok2Be
         }
         public List<string> getAllHotelByRegionId(string textValue)
         {
+
+            Trace.WriteLine(" Downloading: "+textValue);
             if (string.IsNullOrEmpty(textValue))
                 return null;
                try
@@ -427,43 +491,7 @@ namespace Ostrovok2Be
            
 
         }
-        //--------------------
-        public string getGeneralHotelInforByIds(string listIds, string lang = "en")
-        {// link demo: https://1356:f5df4f22-1277-44a7-a7fc-56b5b2de93da@partner.ostrovok.ru/api/b2b/v2/hotel/list?data={"ids":["dong_khanh_hotel"],"lang":"en"}
-            if (!string.IsNullOrEmpty(listIds))
-            {
-                System.Threading.Thread.Sleep(timeIdle);
-                string api_getAllHotelByLocationText =
-                    @"https://partner.ostrovok.ru/api/b2b/v2/hotel/list?data={""ids"":[""" + listIds +
-                    @"""],""lang"":""" + lang + @"""}";
-                CookieContainer myContainer = new CookieContainer();
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(api_getAllHotelByLocationText);
-                request.Credentials = new NetworkCredential("1356", "f5df4f22-1277-44a7-a7fc-56b5b2de93da");
-                request.CookieContainer = myContainer;
-                request.PreAuthenticate = true;
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
-                StreamReader reader = new StreamReader(response.GetResponseStream());
-                string result = reader.ReadLine();
-                if (listIds.Contains(","))
-                {
-                    foreach (var item in listIds.Split(','))
-                    {
-                        allIdsDone.Add(item);
-                    }
-                }
-                else
-                {
-                    allIdsDone.Add(listIds);
-                }
-                return result;
-            }
-            else
-            {
-                return null;
-            }
-          
-        }
-        //---- check rate cũng tương tự:
+       
 
         public JToken getRatesByIds(string listIds)
         {// link demo: https://1356:f5df4f22-1277-44a7-a7fc-56b5b2de93da@partner.ostrovok.ru/api/b2b/v2/hotel/list?data={"ids":["dong_khanh_hotel"],"lang":"en"}
@@ -594,7 +622,7 @@ namespace Ostrovok2Be
         {
             lb_Info.Text = "";
         }
-        #endregion
+      
 
         private void countrylist_MouseClick(object sender, MouseEventArgs e)
         {
@@ -603,7 +631,7 @@ namespace Ostrovok2Be
             /*MessageBox.Show(selecteditem.ToString());*/
             /*countrylist.SetItemChecked(countrylist.SetItemChecked);*/
         }
-
+  #endregion
       
 
       
