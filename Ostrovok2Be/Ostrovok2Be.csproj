@@ -99,17 +99,20 @@
     <Compile Include="Models\getGeneral\ReviewBest.cs" />
     <Compile Include="Models\getGeneral\RoomGroup.cs" />
     <Compile Include="Models\getRates\BedPlace.cs" />
+    <Compile Include="Models\getRates\debug.cs" />
     <Compile Include="Models\getRates\Hotels.cs" />
     <Compile Include="Models\getRates\PaymentOption.cs" />
     <Compile Include="Models\getRates\PaymentType.cs" />
     <Compile Include="Models\getRates\penalty.cs" />
     <Compile Include="Models\getRates\policies.cs" />
-    <Compile Include="Models\getRates\PompetitorPrices.cs" />
+    <Compile Include="Models\getRates\CompetitorPrices.cs" />
     <Compile Include="Models\getRates\Rates.cs" />
     <Compile Include="Models\getRates\RatesPackage.cs" />
+    <Compile Include="Models\getRates\Result.cs" />
     <Compile Include="Models\getRates\ValueAdd.cs" />
     <Compile Include="Models\LogObject\Log.cs" />
     <Compile Include="Models\MidleObject\SupplierMidleObject.cs" />
+    <Compile Include="Models\RoomPrice.cs" />
     <Compile Include="Models\SupplierOstrovok.cs" />
     <Compile Include="Models\SupplierRoomOstrovok.cs" />
     <Compile Include="Program.cs" />
@@ -117,9 +120,7 @@
     <Compile Include="RequestType\GetGeneral.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RequestType\GetRate.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="RequestType\GetRate.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

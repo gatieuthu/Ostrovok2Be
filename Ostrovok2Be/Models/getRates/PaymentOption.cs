@@ -7,7 +7,7 @@ namespace Ostrovok2Be.Models.getRates
 {
    public class PaymentOption
     {
-        public PaymentType payment_types{get;set;}
+        public List<PaymentType> payment_types{get;set;}
 
     }
 }

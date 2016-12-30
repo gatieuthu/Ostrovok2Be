@@ -33,13 +33,16 @@ namespace Ostrovok2Be
         public static int runmode;
         public static List<string> List_Ids = new List<string>();
         public static string  pathLog = @"../../Result/Log/Log.xls";
+        public static string  pathRoomPrice = @"../../Result/Result/RoomPrice.xls";
         public  string currentIds = "";
         public static bool pause = false;
         public ConcurrentBag<Task> AllTasks = new ConcurrentBag<Task>();
         public ConcurrentBag<string> allIdsDone = new ConcurrentBag<string>();
         public ConcurrentBag<LogObject> AllLogs = new ConcurrentBag<LogObject>();
         public static int idsPerUnit = 10;
-        public static List<string> AllCurrencyType =new List<string>(new string []{"VND","USD","RUB","EUR"});
+        public static List<string> AllCurrencyType =new List<string>();
+        public static List<string> AllLangSelected =new List<string>();
+        public static List<RoomPrice> AllRoomPrice = new List<RoomPrice>();
         public static string checkInDate;
         public static string checkOutDate;
 
@@ -52,10 +55,6 @@ namespace Ostrovok2Be
 
         private void Form1_Load(object sender, EventArgs e)
         {
-             //-----------Set  CheckIN and Checkout
-            checkInDate = "2017-05-30";
-            checkOutDate = "2017-06-25";
-
            //--- set the time between 2 connections:
             timeIdle = Int32.Parse(idletime.Text);
             runmode = 0;
@@ -123,50 +122,119 @@ namespace Ostrovok2Be
             
         }
 
+        public void getState()
+        {
+            //-----Get State Currency
+            if (cb_Rub.Checked)
+            {
+                AllCurrencyType.Add("RUB");
+            }  
+            if (cb_Usd.Checked)
+            {
+                AllCurrencyType.Add("USD");
+            } 
+            if (cb_Vnd.Checked)
+            {
+                AllCurrencyType.Add("VND");
+            } 
+            if (cb_Eur.Checked)
+            {
+                AllCurrencyType.Add("EUR");
+            }  
+            //--------------GetSelectLangquage
+            if (cb_En.Checked)
+            {
+                AllLangSelected.Add("en");
+            }
+            if (cb_Ru.Checked)
+            {
+                AllLangSelected.Add("ru");
+            } if (cb_De.Checked)
+            {
+                AllLangSelected.Add("de");
+            } 
+            //----- Get Fromdate and ToDAte
+            checkInDate = dt_Fromdate.Value.ToString("yyyy-MM-dd");
+            checkOutDate = dt_Todate.Value.ToString("yyyy-MM-dd");
+
+
+        }
         public void Taskcreator()
         {
            // ListIDS, LIST Lang, RunMode, List Currency
-            //Get all lang Selected.
-            ListIdsCreator();
-         
-            var allLangSelected = getAllLangSelected();
-            var allIds = ListIdsCreator();
+          
             List<RatesPackage> temp = new List<RatesPackage>();
             var allGroup = list2objbuilder.ListCreator(List_Ids, idsPerUnit);
-            foreach (var itemGroup in allGroup)
+           
+            foreach (var itemGroup in allGroup)//---------> Loop in allUnit
                    {
-                                foreach (var langItem in allLangSelected)
-                                {
+                //---- Lap xong 1 vong save 1 lan
+                                List<RoomPrice> RoomPrice = new List<RoomPrice>();  
                                     List<Task> allTaskInGroupIds = new List<Task>();
-                                        var HotelInStr = new str2objbuilder(itemGroup).listIds2Object();
-                                        Task<string> getGeneral = new Task<string>(() => GetGeneral.getGeneralHotelInforByIds(HotelInStr, langItem));
-                                        getGeneral.Start();
-                                        var result_getGeneral = getGeneral.Result;
+                                    var HotelInStr = new str2objbuilder(itemGroup).listIds2Object();
                                     List<string> result_getRates = new List<string>();
                                     List<RatesPackage> getRatesObject = new List<RatesPackage>();
-                                        allTaskInGroupIds.Add(getGeneral);
+                                               
                                     foreach (var currencyItem in AllCurrencyType)
                                     {
                                         //Request cac loai tien te.
-                                        Task<string> getRatePackage = new Task<string>(() => GetRate.getRateHotelInforByIds(HotelInStr,checkInDate,checkOutDate, langItem));
+                                        Task<string> getRatePackage = new Task<string>(() => GetRate.getRateHotelInforByIds(HotelInStr, checkInDate, checkOutDate, currencyItem));
                                         getRatePackage.Start();
                                         allTaskInGroupIds.Add(getRatePackage);
                                         result_getRates.Add(getRatePackage.Result);
                                     }
-                                    //-----------DATA
                                     var allTaskInArray = allTaskInGroupIds.ToArray();
                                     if (allTaskInArray.Length>0)
                                         Task.WaitAll(allTaskInArray);
-
                                     //---------------Map Object
-                                    var temGenPackage = JsonConvert.DeserializeObject<GeneralPackage>(result_getGeneral);
-                                    foreach (var item in result_getRates)
-                                    {
-                                        getRatesObject.Add(JsonConvert.DeserializeObject<RatesPackage>(item));
-                                    }
+                                 foreach (var item in result_getRates) //  /Request
+                                 {
+                                        var tempRateObj = JsonConvert.DeserializeObject<RatesPackage>(item);
+                                        getRatesObject.Add(tempRateObj);
+                                        if (tempRateObj.result.hotels.Count() > 0)
+                                        {
+                                            List<RoomPrice> tempListRoomPrice = new List<RoomPrice>();
+                                            foreach (var rates in tempRateObj.result.hotels)// All ks/lang /reqeust
+                                            {
+                                                foreach (var perRoom in rates.rates)//All Room/ks/lang/request
+                                                {
+                                                     var tempRoomPrice = new RoomPrice()
+                                                    {
+                                                        Ids=rates.id,
+                                                        fromdate=checkInDate,
+                                                        todate=checkOutDate,
+                                                        Currency = perRoom.rate_currency,
+                                                        Price = perRoom.daily_prices.Average(),
+                                                        room_group_id = perRoom.room_group_id
 
-                                }
-                    }
+                                                    };
+                                                     tempListRoomPrice.Add(tempRoomPrice);
+
+                                                }
+                                                var tempMinRoomPrice = tempListRoomPrice.Where(c=>c.Price==tempListRoomPrice.Select(p=>p.Price).Min()).FirstOrDefault();
+                                                if (tempMinRoomPrice != null)
+                                                {
+                                                    AllRoomPrice.Add(tempMinRoomPrice);
+                                                }
+                                               
+                                            }
+                                        }
+                                        
+                                    }
+                                  
+               
+
+                                    //-------------Save to Excel
+                                
+                       if (pause)
+                       {
+                           break;
+                       }
+                           
+
+
+                   }
+            Begodi.CreateExcelFile.CreateExcelDocument(AllRoomPrice, pathRoomPrice);
 
         }
         
@@ -190,14 +258,17 @@ namespace Ostrovok2Be
                 var temp1= new str2objbuilder(itemGroup).listIds2Object();
                 var temp = GetRate.getRateHotelInforByIds(temp1,checkInDate, checkOutDate,"en" );
             }*/
-            Taskcreator();
+
+            getState();
+            Task crTask = new Task(()=>Taskcreator());
+            crTask.Start();
         }
         private void btn_Pause_Click(object sender, EventArgs e)
         {
             //check file Log exist
 
                 pause = true;
-            Task.WaitAll(AllTasks.ToArray());
+           /* Task.WaitAll(AllTasks.ToArray());
             Debug.WriteLine(" Currentids in Pause Function: "+currentIds);
             if (File.Exists(pathLog))
             {
@@ -229,7 +300,7 @@ namespace Ostrovok2Be
             {
                 createNewLog(currentIds);
             }
-            //--------------
+            //--------------*/
         }
 
         //------------METHODS-------------------------------------------------------------------------------------------
@@ -523,7 +594,7 @@ namespace Ostrovok2Be
                 {
                     result.AddRange(temListIds);
                 }
-              
+                 
 
             }
 
@@ -631,9 +702,15 @@ namespace Ostrovok2Be
             /*MessageBox.Show(selecteditem.ToString());*/
             /*countrylist.SetItemChecked(countrylist.SetItemChecked);*/
         }
-  #endregion
-      
+  
 
+        private void dt_Fromdate_ValueChanged(object sender, EventArgs e)
+        {
+            dt_Todate.Value = dt_Todate.Value.AddDays(25);
+            dt_Todate.Enabled = false;
+        }
+      
+#endregion
       
 
       
