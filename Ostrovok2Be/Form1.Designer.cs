@@ -54,9 +54,17 @@
             this.tb_listIds = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.gb_select = new System.Windows.Forms.GroupBox();
+            this.dt_Fromdate = new System.Windows.Forms.DateTimePicker();
+            this.dt_Todate = new System.Windows.Forms.DateTimePicker();
+            this.gr_Currency = new System.Windows.Forms.GroupBox();
+            this.cb_Usd = new System.Windows.Forms.CheckBox();
+            this.cb_Vnd = new System.Windows.Forms.CheckBox();
+            this.cb_Rub = new System.Windows.Forms.CheckBox();
+            this.cb_Eur = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.group_LangSelect.SuspendLayout();
             this.gb_select.SuspendLayout();
+            this.gr_Currency.SuspendLayout();
             this.SuspendLayout();
             // 
             // startbtn
@@ -258,7 +266,7 @@
             this.group_LangSelect.Controls.Add(this.cb_En);
             this.group_LangSelect.Location = new System.Drawing.Point(389, 50);
             this.group_LangSelect.Name = "group_LangSelect";
-            this.group_LangSelect.Size = new System.Drawing.Size(120, 100);
+            this.group_LangSelect.Size = new System.Drawing.Size(109, 100);
             this.group_LangSelect.TabIndex = 11;
             this.group_LangSelect.TabStop = false;
             this.group_LangSelect.Text = "Select Language";
@@ -303,11 +311,90 @@
             this.gb_select.TabStop = false;
             this.gb_select.Text = "Select Box";
             // 
+            // dt_Fromdate
+            // 
+            this.dt_Fromdate.Location = new System.Drawing.Point(633, 62);
+            this.dt_Fromdate.Name = "dt_Fromdate";
+            this.dt_Fromdate.Size = new System.Drawing.Size(179, 20);
+            this.dt_Fromdate.TabIndex = 15;
+            this.dt_Fromdate.ValueChanged += new System.EventHandler(this.dt_Fromdate_ValueChanged);
+            // 
+            // dt_Todate
+            // 
+            this.dt_Todate.Location = new System.Drawing.Point(633, 102);
+            this.dt_Todate.Name = "dt_Todate";
+            this.dt_Todate.Size = new System.Drawing.Size(179, 20);
+            this.dt_Todate.TabIndex = 15;
+            // 
+            // gr_Currency
+            // 
+            this.gr_Currency.Controls.Add(this.cb_Eur);
+            this.gr_Currency.Controls.Add(this.cb_Rub);
+            this.gr_Currency.Controls.Add(this.cb_Vnd);
+            this.gr_Currency.Controls.Add(this.cb_Usd);
+            this.gr_Currency.Location = new System.Drawing.Point(504, 50);
+            this.gr_Currency.Name = "gr_Currency";
+            this.gr_Currency.Size = new System.Drawing.Size(123, 109);
+            this.gr_Currency.TabIndex = 16;
+            this.gr_Currency.TabStop = false;
+            this.gr_Currency.Text = "Currency";
+            // 
+            // cb_Usd
+            // 
+            this.cb_Usd.AutoSize = true;
+            this.cb_Usd.Checked = true;
+            this.cb_Usd.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Usd.Location = new System.Drawing.Point(7, 20);
+            this.cb_Usd.Name = "cb_Usd";
+            this.cb_Usd.Size = new System.Drawing.Size(49, 17);
+            this.cb_Usd.TabIndex = 0;
+            this.cb_Usd.Text = "USD";
+            this.cb_Usd.UseVisualStyleBackColor = true;
+            // 
+            // cb_Vnd
+            // 
+            this.cb_Vnd.AutoSize = true;
+            this.cb_Vnd.Checked = true;
+            this.cb_Vnd.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Vnd.Location = new System.Drawing.Point(7, 42);
+            this.cb_Vnd.Name = "cb_Vnd";
+            this.cb_Vnd.Size = new System.Drawing.Size(49, 17);
+            this.cb_Vnd.TabIndex = 0;
+            this.cb_Vnd.Text = "VND";
+            this.cb_Vnd.UseVisualStyleBackColor = true;
+            // 
+            // cb_Rub
+            // 
+            this.cb_Rub.AutoSize = true;
+            this.cb_Rub.Checked = true;
+            this.cb_Rub.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Rub.Location = new System.Drawing.Point(6, 65);
+            this.cb_Rub.Name = "cb_Rub";
+            this.cb_Rub.Size = new System.Drawing.Size(49, 17);
+            this.cb_Rub.TabIndex = 0;
+            this.cb_Rub.Text = "RUB";
+            this.cb_Rub.UseVisualStyleBackColor = true;
+            // 
+            // cb_Eur
+            // 
+            this.cb_Eur.AutoSize = true;
+            this.cb_Eur.Checked = true;
+            this.cb_Eur.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Eur.Location = new System.Drawing.Point(6, 83);
+            this.cb_Eur.Name = "cb_Eur";
+            this.cb_Eur.Size = new System.Drawing.Size(49, 17);
+            this.cb_Eur.TabIndex = 0;
+            this.cb_Eur.Text = "EUR";
+            this.cb_Eur.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(976, 456);
+            this.Controls.Add(this.gr_Currency);
+            this.Controls.Add(this.dt_Todate);
+            this.Controls.Add(this.dt_Fromdate);
             this.Controls.Add(this.gb_select);
             this.Controls.Add(this.group_LangSelect);
             this.Controls.Add(this.lb_Info);
@@ -330,6 +417,8 @@
             this.group_LangSelect.PerformLayout();
             this.gb_select.ResumeLayout(false);
             this.gb_select.PerformLayout();
+            this.gr_Currency.ResumeLayout(false);
+            this.gr_Currency.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -361,7 +450,17 @@
         private System.Windows.Forms.TextBox tb_listIds;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox gb_select;
+
+        private System.Windows.Forms.DateTimePicker dt_Fromdate;
+        private System.Windows.Forms.DateTimePicker dt_Todate;
+        private System.Windows.Forms.GroupBox gr_Currency;
+        private System.Windows.Forms.CheckBox cb_Eur;
+        private System.Windows.Forms.CheckBox cb_Rub;
+        private System.Windows.Forms.CheckBox cb_Vnd;
+        private System.Windows.Forms.CheckBox cb_Usd;
+
         internal System.ComponentModel.BackgroundWorker bgWorker;
+
     }
 }
 

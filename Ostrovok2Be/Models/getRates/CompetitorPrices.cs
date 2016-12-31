@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Ostrovok2Be.Models.getRates
 {
-    public class PompetitorPrices
+    public class CompetitorPrices
     {
         public string rate_price { get; set; }
         public string rate_currency { get; set; }

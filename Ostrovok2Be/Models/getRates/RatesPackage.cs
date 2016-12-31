@@ -2,8 +2,9 @@
 {
     public class RatesPackage
     {
-        public Hotels Result { get; set; }
-        public string Currency { get; set; }
+        public string error { get; set; }
+        public Result result { get; set; }
+        public debug debug { get; set; }
          
     }
 }
