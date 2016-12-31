@@ -57,10 +57,10 @@
             this.dt_Fromdate = new System.Windows.Forms.DateTimePicker();
             this.dt_Todate = new System.Windows.Forms.DateTimePicker();
             this.gr_Currency = new System.Windows.Forms.GroupBox();
-            this.cb_Usd = new System.Windows.Forms.CheckBox();
-            this.cb_Vnd = new System.Windows.Forms.CheckBox();
-            this.cb_Rub = new System.Windows.Forms.CheckBox();
             this.cb_Eur = new System.Windows.Forms.CheckBox();
+            this.cb_Rub = new System.Windows.Forms.CheckBox();
+            this.cb_Vnd = new System.Windows.Forms.CheckBox();
+            this.cb_Usd = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.group_LangSelect.SuspendLayout();
             this.gb_select.SuspendLayout();
@@ -69,7 +69,7 @@
             // 
             // startbtn
             // 
-            this.startbtn.Location = new System.Drawing.Point(726, 301);
+            this.startbtn.Location = new System.Drawing.Point(838, 310);
             this.startbtn.Name = "startbtn";
             this.startbtn.Size = new System.Drawing.Size(75, 50);
             this.startbtn.TabIndex = 0;
@@ -105,7 +105,7 @@
             // 
             // refreshbtn
             // 
-            this.refreshbtn.Location = new System.Drawing.Point(726, 191);
+            this.refreshbtn.Location = new System.Drawing.Point(838, 200);
             this.refreshbtn.Name = "refreshbtn";
             this.refreshbtn.Size = new System.Drawing.Size(75, 50);
             this.refreshbtn.TabIndex = 0;
@@ -196,7 +196,7 @@
             // 
             // btn_Pause
             // 
-            this.btn_Pause.Location = new System.Drawing.Point(726, 128);
+            this.btn_Pause.Location = new System.Drawing.Point(838, 137);
             this.btn_Pause.Name = "btn_Pause";
             this.btn_Pause.Size = new System.Drawing.Size(75, 57);
             this.btn_Pause.TabIndex = 9;
@@ -208,7 +208,7 @@
             // 
             // btn_continue
             // 
-            this.btn_continue.Location = new System.Drawing.Point(726, 65);
+            this.btn_continue.Location = new System.Drawing.Point(838, 62);
             this.btn_continue.Name = "btn_continue";
             this.btn_continue.Size = new System.Drawing.Size(75, 57);
             this.btn_continue.TabIndex = 9;
@@ -273,7 +273,7 @@
             // 
             // btn_Exit
             // 
-            this.btn_Exit.Location = new System.Drawing.Point(726, 357);
+            this.btn_Exit.Location = new System.Drawing.Point(838, 366);
             this.btn_Exit.Name = "btn_Exit";
             this.btn_Exit.Size = new System.Drawing.Size(75, 50);
             this.btn_Exit.TabIndex = 0;
@@ -339,29 +339,17 @@
             this.gr_Currency.TabStop = false;
             this.gr_Currency.Text = "Currency";
             // 
-            // cb_Usd
+            // cb_Eur
             // 
-            this.cb_Usd.AutoSize = true;
-            this.cb_Usd.Checked = true;
-            this.cb_Usd.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_Usd.Location = new System.Drawing.Point(7, 20);
-            this.cb_Usd.Name = "cb_Usd";
-            this.cb_Usd.Size = new System.Drawing.Size(49, 17);
-            this.cb_Usd.TabIndex = 0;
-            this.cb_Usd.Text = "USD";
-            this.cb_Usd.UseVisualStyleBackColor = true;
-            // 
-            // cb_Vnd
-            // 
-            this.cb_Vnd.AutoSize = true;
-            this.cb_Vnd.Checked = true;
-            this.cb_Vnd.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_Vnd.Location = new System.Drawing.Point(7, 42);
-            this.cb_Vnd.Name = "cb_Vnd";
-            this.cb_Vnd.Size = new System.Drawing.Size(49, 17);
-            this.cb_Vnd.TabIndex = 0;
-            this.cb_Vnd.Text = "VND";
-            this.cb_Vnd.UseVisualStyleBackColor = true;
+            this.cb_Eur.AutoSize = true;
+            this.cb_Eur.Checked = true;
+            this.cb_Eur.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Eur.Location = new System.Drawing.Point(6, 83);
+            this.cb_Eur.Name = "cb_Eur";
+            this.cb_Eur.Size = new System.Drawing.Size(49, 17);
+            this.cb_Eur.TabIndex = 0;
+            this.cb_Eur.Text = "EUR";
+            this.cb_Eur.UseVisualStyleBackColor = true;
             // 
             // cb_Rub
             // 
@@ -375,17 +363,29 @@
             this.cb_Rub.Text = "RUB";
             this.cb_Rub.UseVisualStyleBackColor = true;
             // 
-            // cb_Eur
+            // cb_Vnd
             // 
-            this.cb_Eur.AutoSize = true;
-            this.cb_Eur.Checked = true;
-            this.cb_Eur.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_Eur.Location = new System.Drawing.Point(6, 83);
-            this.cb_Eur.Name = "cb_Eur";
-            this.cb_Eur.Size = new System.Drawing.Size(49, 17);
-            this.cb_Eur.TabIndex = 0;
-            this.cb_Eur.Text = "EUR";
-            this.cb_Eur.UseVisualStyleBackColor = true;
+            this.cb_Vnd.AutoSize = true;
+            this.cb_Vnd.Checked = true;
+            this.cb_Vnd.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Vnd.Location = new System.Drawing.Point(7, 42);
+            this.cb_Vnd.Name = "cb_Vnd";
+            this.cb_Vnd.Size = new System.Drawing.Size(49, 17);
+            this.cb_Vnd.TabIndex = 0;
+            this.cb_Vnd.Text = "VND";
+            this.cb_Vnd.UseVisualStyleBackColor = true;
+            // 
+            // cb_Usd
+            // 
+            this.cb_Usd.AutoSize = true;
+            this.cb_Usd.Checked = true;
+            this.cb_Usd.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Usd.Location = new System.Drawing.Point(7, 20);
+            this.cb_Usd.Name = "cb_Usd";
+            this.cb_Usd.Size = new System.Drawing.Size(49, 17);
+            this.cb_Usd.TabIndex = 0;
+            this.cb_Usd.Text = "USD";
+            this.cb_Usd.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

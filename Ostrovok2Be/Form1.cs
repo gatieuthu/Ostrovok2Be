@@ -266,11 +266,11 @@ namespace Ostrovok2Be
             Task crTask = new Task(()=>Taskcreator());
             crTask.Start();
         }
-        public void Taskcreator()
+      /*  public void Taskcreator()
         {
             // ListIDS, LIST Lang, RunMode, List Currency
             //Get all lang Selected.
-      /*      ListIdsCreator();*/
+      /*      ListIdsCreator();#1#
 
             var allLangSelected = getAllLangSelected();
             var allIds = ListIdsCreator();
@@ -311,7 +311,7 @@ namespace Ostrovok2Be
                 }
             }
 
-        }
+        }*/
         private void btn_Pause_Click(object sender, EventArgs e)
         {
             //check file Log exist
