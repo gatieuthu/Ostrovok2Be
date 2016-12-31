@@ -149,6 +149,52 @@ namespace Ostrovok2Be
             }*/
             Taskcreator();
         }
+        public void Taskcreator()
+        {
+            // ListIDS, LIST Lang, RunMode, List Currency
+            //Get all lang Selected.
+      /*      ListIdsCreator();*/
+
+            var allLangSelected = getAllLangSelected();
+            var allIds = ListIdsCreator();
+            List<RatesPackage> temp = new List<RatesPackage>();
+            var allGroup = list2objbuilder.ListCreator(List_Ids, idsPerUnit);
+            foreach (var itemGroup in allGroup)
+            {
+                foreach (var langItem in allLangSelected)
+                {
+                    List<Task> allTaskInGroupIds = new List<Task>();
+                    var HotelInStr = new str2objbuilder(itemGroup).listIds2Object();
+                    Task<string> getGeneral = new Task<string>(() => GetGeneral.getGeneralHotelInforByIds(HotelInStr, langItem));
+                    getGeneral.Start();
+                    var result_getGeneral = getGeneral.Result;
+                    List<string> result_getRates = new List<string>();
+                    List<RatesPackage> getRatesObject = new List<RatesPackage>();
+                    allTaskInGroupIds.Add(getGeneral);
+                    foreach (var currencyItem in AllCurrencyType)
+                    {
+                        //Request cac loai tien te.
+                        Task<string> getRatePackage = new Task<string>(() => GetRate.getRateHotelInforByIds(HotelInStr, checkInDate, checkOutDate, langItem));
+                        getRatePackage.Start();
+                        allTaskInGroupIds.Add(getRatePackage);
+                        result_getRates.Add(getRatePackage.Result);
+                    }
+                    //-----------DATA
+                    var allTaskInArray = allTaskInGroupIds.ToArray();
+                    if (allTaskInArray.Length > 0)
+                        Task.WaitAll(allTaskInArray);
+
+                    //---------------Map Object
+                    var temGenPackage = JsonConvert.DeserializeObject<GeneralPackage>(result_getGeneral);
+                    foreach (var item in result_getRates)
+                    {
+                        getRatesObject.Add(JsonConvert.DeserializeObject<RatesPackage>(item));
+                    }
+
+                }
+            }
+
+        }
         private void btn_Pause_Click(object sender, EventArgs e)
         {
             //check file Log exist
