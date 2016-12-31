@@ -116,11 +116,14 @@ namespace Ostrovok2Be
             var allIds = ListIdsCreator();
             foreach (var lang in allLangSelected)
             {
-                Task taskA = Task.Factory.StartNew(() =>  TaskGetHotelGeneral(allIds, 0, runmode, lang.ToLower()));
-                AllTasks.Add(taskA);
+           
+                Task task = new Task(() =>  TaskGetHotelGeneral(allIds, 0, runmode, lang.ToLower()));
+                AllTasks.Add(task);
+                task.Start();
             }
             
         }
+
 
         public void getState()
         {
@@ -447,7 +450,6 @@ namespace Ostrovok2Be
             {
                 bool result = false;
                 //----------------Build list of ObjectLog
-               
                 var allItemInLog = new List<LogObject>();
                 var hasit = false;
                 hasit = List_Ids.Contains(ids);
