@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ostrovok2Be.Models.getFromOstrovok
 {
-    class GeneralPackage
+   public class GeneralPackage
     {
         public string error { get; set; }
         public List<GeneralHotelInfo> result { get; set; }

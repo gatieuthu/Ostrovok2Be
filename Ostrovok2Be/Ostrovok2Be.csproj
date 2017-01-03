@@ -84,6 +84,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Function\IgnoreNulls.cs" />
     <Compile Include="Function\list2objbuilder.cs" />
     <Compile Include="Function\str2objbuilder.cs" />
     <Compile Include="Models\country.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Models\getGeneral\debug.cs" />
     <Compile Include="Models\getGeneral\GeneralHotelInfo.cs" />
     <Compile Include="Models\getGeneral\GeneralPackage.cs" />
+    <Compile Include="Models\getGeneral\GeneraPackageObjByLang.cs" />
     <Compile Include="Models\getGeneral\images.cs" />
     <Compile Include="Models\getGeneral\image_roomgroup.cs" />
     <Compile Include="Models\getGeneral\Matching.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="Models\getRates\ValueAdd.cs" />
     <Compile Include="Models\LogObject\Log.cs" />
     <Compile Include="Models\MidleObject\SupplierMidleObject.cs" />
+    <Compile Include="Models\ReturnObject.cs" />
     <Compile Include="Models\RoomPrice.cs" />
     <Compile Include="Models\SupplierOstrovok.cs" />
     <Compile Include="Models\SupplierRoomOstrovok.cs" />
@@ -122,7 +125,9 @@
     <Compile Include="RequestType\GetGeneral.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RequestType\GetRate.cs" />
+    <Compile Include="RequestType\GetRate.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

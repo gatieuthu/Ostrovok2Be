@@ -40,9 +40,9 @@
             this.bgWorker = new System.ComponentModel.BackgroundWorker();
             this.process_lb = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rd_Check_Update = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.rdAuto = new System.Windows.Forms.RadioButton();
+            this.rd_getPrice = new System.Windows.Forms.RadioButton();
+            this.rd_GetGeneralInfo = new System.Windows.Forms.RadioButton();
+            this.rd_Auto = new System.Windows.Forms.RadioButton();
             this.btn_Pause = new System.Windows.Forms.Button();
             this.btn_continue = new System.Windows.Forms.Button();
             this.lb_Info = new System.Windows.Forms.Label();
@@ -146,9 +146,9 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.rd_Check_Update);
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Controls.Add(this.rdAuto);
+            this.groupBox1.Controls.Add(this.rd_getPrice);
+            this.groupBox1.Controls.Add(this.rd_GetGeneralInfo);
+            this.groupBox1.Controls.Add(this.rd_Auto);
             this.groupBox1.Location = new System.Drawing.Point(194, 25);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(166, 125);
@@ -156,43 +156,43 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Run mode";
             // 
-            // rd_Check_Update
+            // rd_getPrice
             // 
-            this.rd_Check_Update.AutoSize = true;
-            this.rd_Check_Update.Location = new System.Drawing.Point(39, 80);
-            this.rd_Check_Update.Name = "rd_Check_Update";
-            this.rd_Check_Update.Size = new System.Drawing.Size(87, 17);
-            this.rd_Check_Update.TabIndex = 3;
-            this.rd_Check_Update.Text = "Update Price";
-            this.rd_Check_Update.UseVisualStyleBackColor = true;
-            this.rd_Check_Update.MouseLeave += new System.EventHandler(this.rd_Check_Update_MouseLeave);
-            this.rd_Check_Update.MouseHover += new System.EventHandler(this.rd_Check_Update_MouseHover);
+            this.rd_getPrice.AutoSize = true;
+            this.rd_getPrice.Location = new System.Drawing.Point(39, 80);
+            this.rd_getPrice.Name = "rd_getPrice";
+            this.rd_getPrice.Size = new System.Drawing.Size(69, 17);
+            this.rd_getPrice.TabIndex = 3;
+            this.rd_getPrice.Text = "Get Price";
+            this.rd_getPrice.UseVisualStyleBackColor = true;
+            this.rd_getPrice.MouseLeave += new System.EventHandler(this.rd_Check_Update_MouseLeave);
+            this.rd_getPrice.MouseHover += new System.EventHandler(this.rd_Check_Update_MouseHover);
             // 
-            // radioButton2
+            // rd_GetGeneralInfo
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(39, 51);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(70, 17);
-            this.radioButton2.TabIndex = 1;
-            this.radioButton2.Text = "Contitnue";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.MouseLeave += new System.EventHandler(this.radioButton2_MouseLeave);
-            this.radioButton2.MouseHover += new System.EventHandler(this.radioButton2_MouseHover);
+            this.rd_GetGeneralInfo.AutoSize = true;
+            this.rd_GetGeneralInfo.Location = new System.Drawing.Point(39, 51);
+            this.rd_GetGeneralInfo.Name = "rd_GetGeneralInfo";
+            this.rd_GetGeneralInfo.Size = new System.Drawing.Size(103, 17);
+            this.rd_GetGeneralInfo.TabIndex = 1;
+            this.rd_GetGeneralInfo.Text = "Get General Info";
+            this.rd_GetGeneralInfo.UseVisualStyleBackColor = true;
+            this.rd_GetGeneralInfo.MouseLeave += new System.EventHandler(this.radioButton2_MouseLeave);
+            this.rd_GetGeneralInfo.MouseHover += new System.EventHandler(this.radioButton2_MouseHover);
             // 
-            // rdAuto
+            // rd_Auto
             // 
-            this.rdAuto.AutoSize = true;
-            this.rdAuto.Checked = true;
-            this.rdAuto.Location = new System.Drawing.Point(39, 25);
-            this.rdAuto.Name = "rdAuto";
-            this.rdAuto.Size = new System.Drawing.Size(47, 17);
-            this.rdAuto.TabIndex = 0;
-            this.rdAuto.TabStop = true;
-            this.rdAuto.Text = "Auto";
-            this.rdAuto.UseVisualStyleBackColor = true;
-            this.rdAuto.MouseLeave += new System.EventHandler(this.rdAuto_MouseLeave);
-            this.rdAuto.MouseHover += new System.EventHandler(this.rdAuto_MouseHover);
+            this.rd_Auto.AutoSize = true;
+            this.rd_Auto.Checked = true;
+            this.rd_Auto.Location = new System.Drawing.Point(39, 25);
+            this.rd_Auto.Name = "rd_Auto";
+            this.rd_Auto.Size = new System.Drawing.Size(47, 17);
+            this.rd_Auto.TabIndex = 0;
+            this.rd_Auto.TabStop = true;
+            this.rd_Auto.Text = "Auto";
+            this.rd_Auto.UseVisualStyleBackColor = true;
+            this.rd_Auto.MouseLeave += new System.EventHandler(this.rdAuto_MouseLeave);
+            this.rd_Auto.MouseHover += new System.EventHandler(this.rdAuto_MouseHover);
             // 
             // btn_Pause
             // 
@@ -242,6 +242,8 @@
             // cb_Ru
             // 
             this.cb_Ru.AutoSize = true;
+            this.cb_Ru.Checked = true;
+            this.cb_Ru.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_Ru.Location = new System.Drawing.Point(19, 42);
             this.cb_Ru.Name = "cb_Ru";
             this.cb_Ru.Size = new System.Drawing.Size(40, 17);
@@ -286,7 +288,7 @@
             this.tb_listIds.Location = new System.Drawing.Point(169, 35);
             this.tb_listIds.Multiline = true;
             this.tb_listIds.Name = "tb_listIds";
-            this.tb_listIds.Size = new System.Drawing.Size(421, 169);
+            this.tb_listIds.Size = new System.Drawing.Size(213, 160);
             this.tb_listIds.TabIndex = 12;
             // 
             // label3
@@ -306,7 +308,7 @@
             this.gb_select.Controls.Add(this.tb_listIds);
             this.gb_select.Location = new System.Drawing.Point(15, 165);
             this.gb_select.Name = "gb_select";
-            this.gb_select.Size = new System.Drawing.Size(696, 220);
+            this.gb_select.Size = new System.Drawing.Size(399, 220);
             this.gb_select.TabIndex = 14;
             this.gb_select.TabStop = false;
             this.gb_select.Text = "Select Box";
@@ -436,9 +438,9 @@
         private System.Windows.Forms.ProgressBar pBar;
         private System.Windows.Forms.Label process_lb;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton rdAuto;
-        private System.Windows.Forms.RadioButton rd_Check_Update;
+        private System.Windows.Forms.RadioButton rd_GetGeneralInfo;
+        private System.Windows.Forms.RadioButton rd_Auto;
+        private System.Windows.Forms.RadioButton rd_getPrice;
         private System.Windows.Forms.Button btn_Pause;
         private System.Windows.Forms.Button btn_continue;
         private System.Windows.Forms.Label lb_Info;
