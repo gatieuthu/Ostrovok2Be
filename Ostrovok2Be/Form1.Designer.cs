@@ -34,7 +34,6 @@
             this.IntervalCallTimer = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.btn_Save = new System.Windows.Forms.Button();
             this.countrylist = new System.Windows.Forms.CheckedListBox();
             this.pBar = new System.Windows.Forms.ProgressBar();
             this.bgWorker = new System.ComponentModel.BackgroundWorker();
@@ -60,20 +59,21 @@
             this.cb_Rub = new System.Windows.Forms.CheckBox();
             this.cb_Vnd = new System.Windows.Forms.CheckBox();
             this.cb_Usd = new System.Windows.Forms.CheckBox();
-            this.db_Group = new System.Windows.Forms.GroupBox();
-            this.rd_SavePrice = new System.Windows.Forms.RadioButton();
-            this.rd_SaveGen = new System.Windows.Forms.RadioButton();
-            this.label7 = new System.Windows.Forms.Label();
-            this.db_Name_txt = new System.Windows.Forms.TextBox();
-            this.btn_Connect = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.dt_Password_txt = new System.Windows.Forms.TextBox();
-            this.tb_User_txt = new System.Windows.Forms.TextBox();
-            this.Ip_txt = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.btn_Save = new System.Windows.Forms.Button();
+            this.Ip_txt = new System.Windows.Forms.TextBox();
+            this.tb_User_txt = new System.Windows.Forms.TextBox();
+            this.dt_Password_txt = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btn_Connect = new System.Windows.Forms.Button();
+            this.db_Name_txt = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.rd_SaveGen = new System.Windows.Forms.RadioButton();
+            this.rd_SavePrice = new System.Windows.Forms.RadioButton();
+            this.db_Group = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.group_LangSelect.SuspendLayout();
             this.gb_select.SuspendLayout();
@@ -103,7 +103,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 25);
+            this.label1.Location = new System.Drawing.Point(12, 34);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(144, 13);
             this.label1.TabIndex = 2;
@@ -117,16 +117,6 @@
             this.label2.Size = new System.Drawing.Size(58, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "By Country";
-            // 
-            // btn_Save
-            // 
-            this.btn_Save.Location = new System.Drawing.Point(140, 178);
-            this.btn_Save.Name = "btn_Save";
-            this.btn_Save.Size = new System.Drawing.Size(98, 37);
-            this.btn_Save.TabIndex = 0;
-            this.btn_Save.Text = "Save to DB";
-            this.btn_Save.UseVisualStyleBackColor = true;
-            this.btn_Save.Click += new System.EventHandler(this.SaveDb);
             // 
             // countrylist
             // 
@@ -164,7 +154,7 @@
             this.groupBox1.Controls.Add(this.rd_getPrice);
             this.groupBox1.Controls.Add(this.rd_GetGeneralInfo);
             this.groupBox1.Controls.Add(this.rd_Auto);
-            this.groupBox1.Location = new System.Drawing.Point(194, 25);
+            this.groupBox1.Location = new System.Drawing.Point(167, 25);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(166, 125);
             this.groupBox1.TabIndex = 8;
@@ -273,7 +263,7 @@
             // 
             this.group_LangSelect.Controls.Add(this.cb_Ru);
             this.group_LangSelect.Controls.Add(this.cb_En);
-            this.group_LangSelect.Location = new System.Drawing.Point(389, 50);
+            this.group_LangSelect.Location = new System.Drawing.Point(354, 50);
             this.group_LangSelect.Name = "group_LangSelect";
             this.group_LangSelect.Size = new System.Drawing.Size(109, 100);
             this.group_LangSelect.TabIndex = 11;
@@ -322,7 +312,7 @@
             // 
             // dt_Fromdate
             // 
-            this.dt_Fromdate.Location = new System.Drawing.Point(633, 62);
+            this.dt_Fromdate.Location = new System.Drawing.Point(608, 62);
             this.dt_Fromdate.Name = "dt_Fromdate";
             this.dt_Fromdate.Size = new System.Drawing.Size(179, 20);
             this.dt_Fromdate.TabIndex = 15;
@@ -330,7 +320,7 @@
             // 
             // dt_Todate
             // 
-            this.dt_Todate.Location = new System.Drawing.Point(633, 102);
+            this.dt_Todate.Location = new System.Drawing.Point(608, 102);
             this.dt_Todate.Name = "dt_Todate";
             this.dt_Todate.Size = new System.Drawing.Size(179, 20);
             this.dt_Todate.TabIndex = 15;
@@ -341,7 +331,7 @@
             this.gr_Currency.Controls.Add(this.cb_Rub);
             this.gr_Currency.Controls.Add(this.cb_Vnd);
             this.gr_Currency.Controls.Add(this.cb_Usd);
-            this.gr_Currency.Location = new System.Drawing.Point(504, 50);
+            this.gr_Currency.Location = new System.Drawing.Point(476, 50);
             this.gr_Currency.Name = "gr_Currency";
             this.gr_Currency.Size = new System.Drawing.Size(123, 109);
             this.gr_Currency.TabIndex = 16;
@@ -396,6 +386,137 @@
             this.cb_Usd.Text = "USD";
             this.cb_Usd.UseVisualStyleBackColor = true;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(608, 46);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(54, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "From date";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(608, 86);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(44, 13);
+            this.label9.TabIndex = 1;
+            this.label9.Text = "To date";
+            // 
+            // btn_Save
+            // 
+            this.btn_Save.Location = new System.Drawing.Point(140, 178);
+            this.btn_Save.Name = "btn_Save";
+            this.btn_Save.Size = new System.Drawing.Size(98, 37);
+            this.btn_Save.TabIndex = 0;
+            this.btn_Save.Text = "Save to DB";
+            this.btn_Save.UseVisualStyleBackColor = true;
+            this.btn_Save.Click += new System.EventHandler(this.SaveDb);
+            // 
+            // Ip_txt
+            // 
+            this.Ip_txt.Location = new System.Drawing.Point(25, 39);
+            this.Ip_txt.Name = "Ip_txt";
+            this.Ip_txt.Size = new System.Drawing.Size(100, 20);
+            this.Ip_txt.TabIndex = 0;
+            this.Ip_txt.Text = "127.0.0.1";
+            // 
+            // tb_User_txt
+            // 
+            this.tb_User_txt.Location = new System.Drawing.Point(25, 129);
+            this.tb_User_txt.Name = "tb_User_txt";
+            this.tb_User_txt.Size = new System.Drawing.Size(100, 20);
+            this.tb_User_txt.TabIndex = 0;
+            this.tb_User_txt.Text = "sa";
+            // 
+            // dt_Password_txt
+            // 
+            this.dt_Password_txt.Location = new System.Drawing.Point(25, 190);
+            this.dt_Password_txt.Name = "dt_Password_txt";
+            this.dt_Password_txt.PasswordChar = '*';
+            this.dt_Password_txt.Size = new System.Drawing.Size(100, 20);
+            this.dt_Password_txt.TabIndex = 0;
+            this.dt_Password_txt.Text = "123456";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(22, 23);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(57, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Server\'s Ip";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(22, 105);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(60, 13);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "User Name";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(22, 165);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 13);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "Password";
+            // 
+            // btn_Connect
+            // 
+            this.btn_Connect.Location = new System.Drawing.Point(140, 26);
+            this.btn_Connect.Name = "btn_Connect";
+            this.btn_Connect.Size = new System.Drawing.Size(98, 37);
+            this.btn_Connect.TabIndex = 6;
+            this.btn_Connect.Text = "Connect";
+            this.btn_Connect.UseVisualStyleBackColor = true;
+            this.btn_Connect.Click += new System.EventHandler(this.btn_Connect_Click);
+            // 
+            // db_Name_txt
+            // 
+            this.db_Name_txt.Location = new System.Drawing.Point(22, 78);
+            this.db_Name_txt.Name = "db_Name_txt";
+            this.db_Name_txt.Size = new System.Drawing.Size(100, 20);
+            this.db_Name_txt.TabIndex = 7;
+            this.db_Name_txt.Text = "Wegodi";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(22, 59);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(53, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "Database";
+            // 
+            // rd_SaveGen
+            // 
+            this.rd_SaveGen.AutoSize = true;
+            this.rd_SaveGen.Checked = true;
+            this.rd_SaveGen.Location = new System.Drawing.Point(140, 101);
+            this.rd_SaveGen.Name = "rd_SaveGen";
+            this.rd_SaveGen.Size = new System.Drawing.Size(163, 17);
+            this.rd_SaveGen.TabIndex = 9;
+            this.rd_SaveGen.TabStop = true;
+            this.rd_SaveGen.Text = "Save Generation Hotel to DB";
+            this.rd_SaveGen.UseVisualStyleBackColor = true;
+            this.rd_SaveGen.CheckedChanged += new System.EventHandler(this.rd_SaveGen_CheckedChanged);
+            // 
+            // rd_SavePrice
+            // 
+            this.rd_SavePrice.AutoSize = true;
+            this.rd_SavePrice.Location = new System.Drawing.Point(140, 124);
+            this.rd_SavePrice.Name = "rd_SavePrice";
+            this.rd_SavePrice.Size = new System.Drawing.Size(138, 17);
+            this.rd_SavePrice.TabIndex = 9;
+            this.rd_SavePrice.Text = "Save Room Price to DB";
+            this.rd_SavePrice.UseVisualStyleBackColor = true;
+            this.rd_SavePrice.CheckedChanged += new System.EventHandler(this.rd_SavePrice_CheckedChanged);
+            // 
             // db_Group
             // 
             this.db_Group.Controls.Add(this.rd_SavePrice);
@@ -417,132 +538,11 @@
             this.db_Group.TabStop = false;
             this.db_Group.Text = "Database Connector";
             // 
-            // rd_SavePrice
-            // 
-            this.rd_SavePrice.AutoSize = true;
-            this.rd_SavePrice.Location = new System.Drawing.Point(140, 124);
-            this.rd_SavePrice.Name = "rd_SavePrice";
-            this.rd_SavePrice.Size = new System.Drawing.Size(138, 17);
-            this.rd_SavePrice.TabIndex = 9;
-            this.rd_SavePrice.Text = "Save Room Price to DB";
-            this.rd_SavePrice.UseVisualStyleBackColor = true;
-            this.rd_SavePrice.CheckedChanged += new System.EventHandler(this.rd_SavePrice_CheckedChanged);
-            // 
-            // rd_SaveGen
-            // 
-            this.rd_SaveGen.AutoSize = true;
-            this.rd_SaveGen.Checked = true;
-            this.rd_SaveGen.Location = new System.Drawing.Point(140, 101);
-            this.rd_SaveGen.Name = "rd_SaveGen";
-            this.rd_SaveGen.Size = new System.Drawing.Size(163, 17);
-            this.rd_SaveGen.TabIndex = 9;
-            this.rd_SaveGen.TabStop = true;
-            this.rd_SaveGen.Text = "Save Generation Hotel to DB";
-            this.rd_SaveGen.UseVisualStyleBackColor = true;
-            this.rd_SaveGen.CheckedChanged += new System.EventHandler(this.rd_SaveGen_CheckedChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 59);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 13);
-            this.label7.TabIndex = 8;
-            this.label7.Text = "Database";
-            // 
-            // db_Name_txt
-            // 
-            this.db_Name_txt.Location = new System.Drawing.Point(22, 78);
-            this.db_Name_txt.Name = "db_Name_txt";
-            this.db_Name_txt.Size = new System.Drawing.Size(100, 20);
-            this.db_Name_txt.TabIndex = 7;
-            this.db_Name_txt.Text = "Wegodi";
-            // 
-            // btn_Connect
-            // 
-            this.btn_Connect.Location = new System.Drawing.Point(140, 26);
-            this.btn_Connect.Name = "btn_Connect";
-            this.btn_Connect.Size = new System.Drawing.Size(98, 37);
-            this.btn_Connect.TabIndex = 6;
-            this.btn_Connect.Text = "Connect";
-            this.btn_Connect.UseVisualStyleBackColor = true;
-            this.btn_Connect.Click += new System.EventHandler(this.btn_Connect_Click);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(22, 165);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 13);
-            this.label6.TabIndex = 1;
-            this.label6.Text = "Password";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(22, 105);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(60, 13);
-            this.label5.TabIndex = 1;
-            this.label5.Text = "User Name";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(22, 23);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(57, 13);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Server\'s Ip";
-            // 
-            // dt_Password_txt
-            // 
-            this.dt_Password_txt.Location = new System.Drawing.Point(25, 190);
-            this.dt_Password_txt.Name = "dt_Password_txt";
-            this.dt_Password_txt.PasswordChar = '*';
-            this.dt_Password_txt.Size = new System.Drawing.Size(100, 20);
-            this.dt_Password_txt.TabIndex = 0;
-            this.dt_Password_txt.Text = "123456";
-            // 
-            // tb_User_txt
-            // 
-            this.tb_User_txt.Location = new System.Drawing.Point(25, 129);
-            this.tb_User_txt.Name = "tb_User_txt";
-            this.tb_User_txt.Size = new System.Drawing.Size(100, 20);
-            this.tb_User_txt.TabIndex = 0;
-            this.tb_User_txt.Text = "sa";
-            // 
-            // Ip_txt
-            // 
-            this.Ip_txt.Location = new System.Drawing.Point(25, 39);
-            this.Ip_txt.Name = "Ip_txt";
-            this.Ip_txt.Size = new System.Drawing.Size(100, 20);
-            this.Ip_txt.TabIndex = 0;
-            this.Ip_txt.Text = "127.0.0.1";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(633, 46);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(54, 13);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "From date";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(633, 86);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(44, 13);
-            this.label9.TabIndex = 1;
-            this.label9.Text = "To date";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(829, 456);
+            this.ClientSize = new System.Drawing.Size(800, 456);
             this.Controls.Add(this.db_Group);
             this.Controls.Add(this.gr_Currency);
             this.Controls.Add(this.dt_Todate);
@@ -586,7 +586,6 @@
         private System.Windows.Forms.Timer IntervalCallTimer;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btn_Save;
         private System.Windows.Forms.CheckedListBox countrylist;
         private System.Windows.Forms.ProgressBar pBar;
         private System.Windows.Forms.Label process_lb;
@@ -614,20 +613,21 @@
         private System.Windows.Forms.CheckBox cb_Usd;
 
         internal System.ComponentModel.BackgroundWorker bgWorker;
-        private System.Windows.Forms.GroupBox db_Group;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox dt_Password_txt;
-        private System.Windows.Forms.TextBox tb_User_txt;
-        private System.Windows.Forms.TextBox Ip_txt;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button btn_Connect;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox db_Name_txt;
-        private System.Windows.Forms.RadioButton rd_SavePrice;
-        private System.Windows.Forms.RadioButton rd_SaveGen;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button btn_Save;
+        private System.Windows.Forms.TextBox Ip_txt;
+        private System.Windows.Forms.TextBox tb_User_txt;
+        private System.Windows.Forms.TextBox dt_Password_txt;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btn_Connect;
+        private System.Windows.Forms.TextBox db_Name_txt;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.RadioButton rd_SaveGen;
+        private System.Windows.Forms.RadioButton rd_SavePrice;
+        private System.Windows.Forms.GroupBox db_Group;
 
     }
 }
