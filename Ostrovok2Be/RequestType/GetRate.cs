@@ -7,7 +7,7 @@ namespace Ostrovok2Be.RequestType
 {
     public class GetRate:Form1
     {
-        public static ReturnObject getRateHotelInforByIds(string listIds, string checkin = "", string checkout = "", string currency = "USD")
+        public static ReturnObject getRateHotelInforByListOfIds(string listIds, string checkin = "", string checkout = "", string currency = "USD")
         {
 
             try

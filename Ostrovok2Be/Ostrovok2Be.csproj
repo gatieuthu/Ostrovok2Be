@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AE, Version=1.0.1898.1273, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\AE.dll</HintPath>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
@@ -155,11 +159,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Result\GeneralHotelInfo\" />
     <Folder Include="Result\Log\" />
-    <Folder Include="Result\Raw\" />
-    <Folder Include="Result\Result\" />
+    <Folder Include="Result\RoomPrice\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DLL\AE.dll" />
     <Content Include="DLL\DocumentFormat.OpenXml.dll" />
     <Content Include="Object\countrylist.txt" />
   </ItemGroup>
