@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -34,9 +35,11 @@ namespace Ostrovok2Be
         public static int timeIdle=1000;
         public static int runmode=0;
         public static List<string> List_Ids = new List<string>();
-        public static string  pathLog = @"../../Result/Log/Log.xlsx";
-        public static string  pathRoomPrice = @"../../Result/Result/RoomPrice.xlsx";
-        public static string pathGeneralHotelInfo = @"../../Result/Raw/raw_GeneralData.xlsx";
+        public static string  pathLogGetPrice = @"../../Result/Log/Log-Price.xlsx";
+        public static string  pathLogGetGeneralInfo = @"../../Result/Log/Log-Info.xlsx";
+        public static string pathRoomPrice = @"../../Result/RoomPrice/RoomPrice.xlsx";
+        public static string pathGeneralHotelInfo = @"../../Result/GeneralHotelInfo/GeneralHotelInfoData.xlsx";
+        public static string pathCountryList = @"../../Object/countrylist.txt";
         public  string currentIds = "";
         public static bool pause = false;
         public ConcurrentBag<Task> AllTasks = new ConcurrentBag<Task>();
@@ -48,6 +51,8 @@ namespace Ostrovok2Be
         public static List<RoomPrice> AllRoomPrice = new List<RoomPrice>();
         public static string checkInDate;
         public static string checkOutDate;
+        public static string connectStr = "";
+        public static int choosen_SaveType=0;
 
         //--------- COMPONENT EVENT---------------------------------------------------
 
@@ -62,13 +67,13 @@ namespace Ostrovok2Be
            //--- set the time between 2 connections:
             timeIdle = Int32.Parse(idletime.Text);
             runmode = 0;
-            string locationlist = File.ReadAllText("../../Object/countrylist.txt");
+            string locationlist = File.ReadAllText(pathCountryList);
+            var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
             //------------------------
             if (File.Exists(pathLog))
             {
             FileStream stream = File.Open(pathLog, FileMode.Open, FileAccess.Read);
             IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-                
             excelReader.IsFirstRowAsColumnNames = true;
             DataSet result1 = excelReader.AsDataSet();
             IEnumerable<LogObject> allItemLog = from row in result1.Tables["Table1"].AsEnumerable()
@@ -108,11 +113,7 @@ namespace Ostrovok2Be
 
         }
 
-        private void refreshbtn_Click(object sender, EventArgs e)
-        {
-
-
-        }
+      
         private  void startbtn_Click(object sender, EventArgs e)
         {
             startbtn.Text = "Started";
@@ -128,7 +129,7 @@ namespace Ostrovok2Be
                         {
                             
                        
-                                        Task task = new Task(() => TaskGetHotelGeneral(allIds, 0, runmode));
+                                        Task task = new Task(() => GetHotelGeneral(allIds, 0, runmode));
                                         AllTasks.Add(task);
                                         task.Start();
                         
@@ -147,8 +148,9 @@ namespace Ostrovok2Be
                 if (allIds.Count > 0)
                         {
                              
-                                Task crTask = new Task(() => Taskcreator());
-                                crTask.Start();
+                                Task task = new Task(() => GetPrice());
+                                AllTasks.Add(task);
+                                task.Start();
                         }
                         else
                         {
@@ -188,10 +190,10 @@ namespace Ostrovok2Be
             if (cb_Ru.Checked)
             {
                 AllLangSelected.Add("ru");
-            } if (cb_De.Checked)
+            } /*if (cb_De.Checked)
             {
                 AllLangSelected.Add("de");
-            } 
+            } */
             //----- Get Fromdate and ToDAte
             checkInDate = dt_Fromdate.Value.ToString("yyyy-MM-dd");
             checkOutDate = dt_Todate.Value.ToString("yyyy-MM-dd");
@@ -203,16 +205,23 @@ namespace Ostrovok2Be
                 runmode = 2; 
             if (rd_Auto.Checked)
                 runmode = 0;
+            //---get Savetype in Default mode
+            if (rd_SaveGen.Checked)
+            {
+                choosen_SaveType = 1;
+            }
+            if (rd_SavePrice.Checked)
+            {
+                choosen_SaveType = 2;
+            }
 
 
         }
-        public void Taskcreator()
+        public void GetPrice()
         {
            // ListIDS, LIST Lang, RunMode, List Currency
-          
             List<RatesPackage> temp = new List<RatesPackage>();
             var allGroup = list2objbuilder.ListCreator(List_Ids, idsPerUnit);
-           
             foreach (var itemGroup in allGroup)//---------> Loop in allUnit
                    {
                 //---- Lap xong 1 vong save 1 lan
@@ -322,10 +331,10 @@ namespace Ostrovok2Be
             }
 
             getState();
-            Task crTask = new Task(()=>Taskcreator());
+            Task crTask = new Task(()=>GetPrice());
             crTask.Start();*/
         }
-      /*  public void Taskcreator()
+      /*  public void GetPrice()
         {
             // ListIDS, LIST Lang, RunMode, List Currency
             //Get all lang Selected.
@@ -371,13 +380,260 @@ namespace Ostrovok2Be
             }
 
         }*/
+        private void btn_Connect_Click(object sender, EventArgs e)
+        {
+            btn_Connect.Text = "Connecting";
+            try
+            {
+                //---- creating string.....
+
+                List<string> numTables = new List<string>();
+
+                string connStr = @"Data Source =" + Ip_txt.Text + "; Initial Catalog = " + db_Name_txt.Text + "; User ID =" + tb_User_txt.Text + "; password = " + dt_Password_txt.Text;
+                //MessageBox.Show(connStr);
+                string sql = "SELECT * FROM information_schema.tables";
+
+
+                SqlConnection conn = new SqlConnection(connStr);
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        if (reader[2].ToString() != "sysdiagrams")
+                        {
+                            numTables.Add(reader[2].ToString());
+
+                        }
+                    }
+
+                    //MessageBox.Show(numTables.Count().ToString());
+
+                    reader.Close();//Đóng SqlDataReader
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine("Error: " + ex);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+                if (numTables.Count() > 0)
+                {
+
+                    btn_Connect.Text = "Connected";
+                    btn_Connect.Enabled = false;
+                    connectStr = connStr;
+                    // MessageBox.Show(connectStr);
+
+                }
+                else
+                {
+                    MessageBox.Show("Try again!");
+
+                }
+
+            }
+            catch
+            {
+                btn_Connect.Text = "Connect";
+            }
+
+        }
+
+        private void SaveDb(object sender, EventArgs e)
+        {
+            try
+            {
+                //----Read Excel
+                // int choosen = 1;
+                if (connectStr == "")
+                {
+                    MessageBox.Show(" Correct the connect string then press connect button !");
+                    return;
+                }
+                if (choosen_SaveType == 1)
+                {
+                    //Save General Hotel Information
+                    //--read data from excel file
+                    if (!File.Exists(pathGeneralHotelInfo))
+                    {
+                        MessageBox.Show(" Check the Path again !");
+                        return;
+                    }
+                    FileStream stream = File.Open(pathGeneralHotelInfo, FileMode.Open, FileAccess.Read);
+                    IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                    excelReader.IsFirstRowAsColumnNames = true;
+                    DataSet result = excelReader.AsDataSet();
+
+                    IEnumerable<SupplierMidleObject> allOstrovokSupplier = from row in result.Tables["Table1"].AsEnumerable()
+                                                                           select new SupplierMidleObject()
+                                                                           {
+                                                                               SupplierOstIds = Convert.ToString(row["SupplierOstIds"]),
+                                                                               SupplierOstNameEn = Convert.ToString(row["SupplierOstNameEn"]),
+                                                                               SupplierOstNameRu = Convert.ToString(row["SupplierOstNameRu"]),
+                                                                               Policy_descriptionRu = Convert.ToString(row["Policy_descriptionRu"]),
+                                                                               Policy_descriptionEn = Convert.ToString(row["Policy_descriptionEn"]),
+                                                                               DescriptionEn = Convert.ToString(row["DescriptionEn"]),
+                                                                               DescriptionRu = Convert.ToString(row["DescriptionRu"]),
+                                                                               AmenitiesEn = Convert.ToString(row["AmenitiesEn"]),
+                                                                               AmenitiesRu = Convert.ToString(row["AmenitiesRu"]),
+                                                                               CountryEn = Convert.ToString(row["CountryEn"]),
+                                                                               CountryRu = Convert.ToString(row["CountryRu"]),
+                                                                               CityRu = Convert.ToString(row["CityRu"]),
+                                                                               CityEn = Convert.ToString(row["CityEn"]),
+                                                                               RegionId = Convert.ToString(row["RegionId"]),
+                                                                               AddressEn = Convert.ToString(row["AddressEn"]),
+                                                                               AddressRu = Convert.ToString(row["AddressRu"]),
+                                                                               Adress_clean = Convert.ToString(row["Adress_clean"]),
+                                                                               Thumbnail = Convert.ToString(row["Thumbnail"]),
+                                                                               Lat = Convert.ToString(row["Lat"]),
+                                                                               Long = Convert.ToString(row["Long"]),
+                                                                               Country_code = Convert.ToString(row["Country_code"]),
+                                                                               Kind = Convert.ToString(row["Kind"]),
+                                                                               Phone = Convert.ToString(row["Phone"]),
+                                                                               Email = Convert.ToString(row["Email"]),
+                                                                               Images = Convert.ToString(row["Images"]),
+                                                                               Contract_slug = Convert.ToString(row["Contract_slug"])
+
+                                                                           };
+                    // Call store and insert database
+                    foreach (var item in allOstrovokSupplier)
+                    {
+                        var Conn = new SqlConnection(connectStr);
+                        var P = new SqlParameter[26];
+                        P[0] = new SqlParameter("@SupplierOstIds", SqlDbType.NVarChar);
+                        P[0].Value = item.SupplierOstIds;
+                        P[1] = new SqlParameter("@SupplierOstNameEn", SqlDbType.NVarChar);
+                        P[1].Value = item.SupplierOstNameEn;
+                        P[2] = new SqlParameter("@SupplierOstNameRu", SqlDbType.NVarChar);
+                        P[2].Value = item.SupplierOstNameRu;
+                        P[3] = new SqlParameter("@Policy_descriptionRu", SqlDbType.NVarChar);
+                        P[3].Value = item.Policy_descriptionRu;
+                        P[4] = new SqlParameter("@Policy_descriptionEn", SqlDbType.NVarChar);
+                        P[4].Value = item.Policy_descriptionEn;
+                        P[5] = new SqlParameter("@DescriptionEn", SqlDbType.NVarChar);
+                        P[5].Value = item.DescriptionEn;
+                        P[6] = new SqlParameter("@DescriptionRu", SqlDbType.NVarChar);
+                        P[6].Value = item.DescriptionRu;
+                        P[7] = new SqlParameter("@AmenitiesEn", SqlDbType.NVarChar);
+                        P[7].Value = item.AmenitiesEn;
+                        P[8] = new SqlParameter("@AmenitiesRu", SqlDbType.NVarChar);
+                        P[8].Value = item.AmenitiesRu;
+                        P[9] = new SqlParameter("@CountryEn", SqlDbType.NVarChar);
+                        P[9].Value = item.CountryEn;
+                        P[10] = new SqlParameter("@CountryRu", SqlDbType.NVarChar);
+                        P[10].Value = item.CountryRu;
+                        P[11] = new SqlParameter("@CityRu", SqlDbType.NVarChar);
+                        P[11].Value = item.CityRu;
+                        P[12] = new SqlParameter("@CityEn", SqlDbType.NVarChar);
+                        P[12].Value = item.CityEn;
+                        P[13] = new SqlParameter("@RegionId", SqlDbType.NVarChar);
+                        P[13].Value = item.RegionId;
+                        P[14] = new SqlParameter("@AddressEn", SqlDbType.NVarChar);
+                        P[14].Value = item.AddressEn;
+                        P[15] = new SqlParameter("@AddressRu", SqlDbType.NVarChar);
+                        P[15].Value = item.AddressRu;
+                        P[16] = new SqlParameter("@Adress_clean", SqlDbType.NVarChar);
+                        P[16].Value = item.Adress_clean;
+                        P[17] = new SqlParameter("@Thumbnail", SqlDbType.NVarChar);
+                        P[17].Value = item.Thumbnail;
+                        P[18] = new SqlParameter("@Lat", SqlDbType.NVarChar);
+                        P[18].Value = item.Lat;
+                        P[19] = new SqlParameter("@Long", SqlDbType.NVarChar);
+                        P[19].Value = item.Long;
+                        P[20] = new SqlParameter("@Country_code", SqlDbType.NVarChar);
+                        P[20].Value = item.Country_code;
+                        P[21] = new SqlParameter("@Kind", SqlDbType.NVarChar);
+                        P[21].Value = item.Kind;
+                        P[22] = new SqlParameter("@Phone", SqlDbType.NVarChar);
+                        P[22].Value = item.Phone;
+                        P[23] = new SqlParameter("@Email", SqlDbType.NVarChar);
+                        P[23].Value = item.Email;
+                        P[24] = new SqlParameter("@Images", SqlDbType.NVarChar);
+                        P[24].Value = item.Images;
+                        P[25] = new SqlParameter("@Contract_slug", SqlDbType.NVarChar);
+                        P[25].Value = item.Contract_slug;
+                        var dt = AE.SqlHelper.ExecuteDataTable(Conn, CommandType.StoredProcedure, "InsertOstrovokSupplier", P);
+                    }
+                }
+                if (choosen_SaveType == 2)
+                {
+                    if (!File.Exists(pathRoomPrice))
+                    {
+                        MessageBox.Show(" Check the Path again !");
+                        return;
+                    }
+                    FileStream stream = File.Open(pathRoomPrice, FileMode.Open, FileAccess.Read);
+                    IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                    excelReader.IsFirstRowAsColumnNames = true;
+                    DataSet result = excelReader.AsDataSet();
+
+                    IEnumerable<RoomPrice> allRoomPrice = from row in result.Tables["Table1"].AsEnumerable()
+                                                          select new RoomPrice()
+                                                          {
+                                                              Ids = Convert.ToString(row["Ids"]),
+                                                              fromdate = Convert.ToString(row["fromdate"]),
+                                                              todate = Convert.ToString(row["todate"]),
+                                                              room_group_id = Convert.ToString(row["room_group_id"]) != null ? int.Parse(Convert.ToString(row["room_group_id"])) : 0,
+                                                              Price = Convert.ToString(row["Price"]) != null ? float.Parse(Convert.ToString(row["Price"])) : 0,
+                                                              Currency = Convert.ToString(row["Currency"])
+
+                                                          };
+
+
+                    foreach (var item in allRoomPrice)
+                    {
+                        var Conn = new SqlConnection(connectStr);
+                        var P = new SqlParameter[6];
+                        P[0] = new SqlParameter("@Ids", SqlDbType.NVarChar);
+                        P[0].Value = item.Ids;
+                        P[1] = new SqlParameter("@fromdate", SqlDbType.NVarChar);
+                        P[1].Value = item.fromdate;
+                        P[2] = new SqlParameter("@todate", SqlDbType.NVarChar);
+                        P[2].Value = item.todate;
+                        P[3] = new SqlParameter("@room_group_id", SqlDbType.NVarChar);
+                        P[3].Value = item.room_group_id;
+                        P[4] = new SqlParameter("@Price", SqlDbType.NVarChar);
+                        P[4].Value = item.Price;
+                        P[5] = new SqlParameter("@Currency", SqlDbType.NVarChar);
+                        P[5].Value = item.Currency;
+                        var dt = AE.SqlHelper.ExecuteDataTable(Conn, CommandType.StoredProcedure, "InsertRoomPriceOst", P);
+                    }
+
+
+                }
+            }
+            catch
+            {
+                MessageBox.Show(" Have an Error !");
+            }
+
+
+        }
+
+        private void rd_SaveGen_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rd_SaveGen.Checked)
+            {
+                choosen_SaveType = 1;
+            }
+        }
+
+      
         private void btn_Pause_Click(object sender, EventArgs e)
         {
+            
 
             startbtn.Enabled = true;
             btn_continue.Enabled = true;
             pause = true;
-           /* Task.WaitAll(AllTasks.ToArray());
+           Task.WaitAll(AllTasks.ToArray());
+           var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
             Debug.WriteLine(" Currentids in Pause Function: "+currentIds);
             if (File.Exists(pathLog))
             {
@@ -409,13 +665,14 @@ namespace Ostrovok2Be
             {
                 createNewLog(currentIds);
             }
-            //--------------*/
+            //--------------
         }
 
         //------------METHODS-------------------------------------------------------------------------------------------
 
         private void UpdateLog()
         {
+            var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
             if (allIdsDone.Count() > 0)
             {
                 foreach (var doneItem in allIdsDone)
@@ -439,16 +696,16 @@ namespace Ostrovok2Be
             {
                 var tem = "ru";
                 allSelectedLang.Add(tem);
-            } if (cb_De.Checked)
+            } /*if (cb_De.Checked)
             {
                 var tem = "de";
                 allSelectedLang.Add(tem);
-            }
+            }*/
             return allSelectedLang;
         }
 
 
-        public void TaskGetHotelGeneral(List<string> allIds, int type = 0, int runtype = 0)
+        public void GetHotelGeneral(List<string> allIds, int type = 0, int runtype = 0)
         {
            /* process_lb.Text = "TASK: Get Hotel Info...";*/
             //type =0 get by region_id
@@ -584,6 +841,7 @@ namespace Ostrovok2Be
 
         public bool createNewLog(string ids)
         {
+            var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
             try
             {
                 bool result = false;
@@ -849,9 +1107,42 @@ namespace Ostrovok2Be
             dt_Todate.Value = dt_Todate.Value.AddDays(25);
             dt_Todate.Enabled = false;
         }
-      
+        private void rd_SavePrice_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rd_SavePrice.Checked)
+            {
+                choosen_SaveType = 2;
+            }
+        }
+        private void rd_GetGeneralInfo_CheckedChanged(object sender, EventArgs e)
+            {
+                if (rd_GetGeneralInfo.Checked)
+                {
+                    runmode = 1;
+                }
+            }
+
+            private void rd_getPrice_CheckedChanged(object sender, EventArgs e)
+            {
+                if (rd_getPrice.Checked)
+                {
+                    runmode = 2;
+                }
+            }
+
+            private void rd_Auto_CheckedChanged(object sender, EventArgs e)
+            {
+                if (rd_Auto.Checked)
+                {
+                    runmode = 0;
+                }
+            }
+
 #endregion
-      
+
+    
+    
+       
 
       
     }
