@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Windows.Forms;
 using Ostrovok2Be.Models;
 
 namespace Ostrovok2Be.RequestType
@@ -41,8 +43,9 @@ namespace Ostrovok2Be.RequestType
 
 
             }
-            catch
+            catch(Exception m)
             {
+                MessageBox.Show(" Exxxception....."+m.Message);
                 return null;
             }
         }

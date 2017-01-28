@@ -21,10 +21,10 @@ namespace TEST
            var checkInDate = "2017-05-31";
           var  checkOutDate = "2017-06-01";
 
-            var tempresult = GetRate.getRateHotelInforByIds(allGroup, checkInDate, checkOutDate, "VND");
+            /*var tempresult = GetRate.getRateHotelInforByIds(allGroup, checkInDate, checkOutDate, "VND");*/
 
 
-            var tempRateObj = JsonConvert.DeserializeObject<RatesPackage>(tempresult);
+         /*   var tempRateObj = JsonConvert.DeserializeObject<RatesPackage>(tempresult);*/
                 //getRatesObject.Add(tempRateObj);
            
 
