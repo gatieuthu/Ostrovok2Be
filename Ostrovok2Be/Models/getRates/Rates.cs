@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Ostrovok2Be.Models.getRates
 {
+ 
     public class Rates
     {
         
