@@ -230,7 +230,9 @@ namespace Ostrovok2Be
                                     List<string> result_getRates = new List<string>();
                                     List<RatesPackage> getRatesObject = new List<RatesPackage>();
 
-                                    object lockObj = new object();          
+                                    object lockObj = new object();
+                                 //fix select USD only
+                                 AllCurrencyType = new List<string>(new string[] { "USD"});
                                     foreach (var currencyItem in AllCurrencyType)
                                     {
                                         //Request cac loai tien te.
@@ -270,16 +272,11 @@ namespace Ostrovok2Be
                                             {
                                                 foreach (var perRoom in rates.rates)//Room
                                                 {
-                                                     var tempRoomPrice = new RoomPrice()
-                                                    {
-                                                        Ids=rates.id,
-                                                        fromdate=checkInDate,
-                                                        todate=checkOutDate,
-                                                        Currency = perRoom.rate_currency,
-                                                        Price = perRoom.daily_prices.Average(),
-                                                        room_group_id = perRoom.room_group_id
-                                                    };
-                                                     tempListRoomPrice.Add(tempRoomPrice);
+                                           //---Kiem tra va tach ra nhieu roomprice neu can thiet
+                                                    List<RoomPrice> afterDived = CheckAndDivRoomPriceList(perRoom,rates.id,perRoom.room_group_id,"USD",checkInDate,checkOutDate);
+                                               
+                                                    if(afterDived.Count>0)
+                                                     tempListRoomPrice.AddRange(afterDived);
 
                                                 }
                                                 var tempMinRoomPrice = tempListRoomPrice.Where(c=>c.Price==tempListRoomPrice.Select(p=>p.Price).Min()).FirstOrDefault();
@@ -314,6 +311,67 @@ namespace Ostrovok2Be
 
         }
 
+        private List<RoomPrice> CheckAndDivRoomPriceList(Rates a, string ids, int? roomGroup, string currency, string fromdate, string todate)
+        {
+            List<RoomPrice> result=new List<RoomPrice>();
+            List<Rates> all = new List<Rates>();
+           var temp = Begodi.ObjectExtensions.Copy(a);
+            temp.daily_prices.Clear();
+            int i = 0;
+            foreach (var item in a.daily_prices)
+            {
+                i++;
+                if (i == 1)
+                {
+                    temp.daily_prices.Add(item);
+                }
+                else
+                {
+                    if (temp.daily_prices.Count > 0)
+                    {
+                        if (temp.daily_prices.LastOrDefault() != item)
+                        {
+                            all.Add(temp);
+                            temp.daily_prices.Clear();
+                            temp.daily_prices.Add(item);
+                        }
+                        else
+                        {
+                            temp.daily_prices.Add(item);
+                        }
+                    }
+                }
+                if (i == a.daily_prices.Count())
+                {
+                    all.Add(temp);
+                }
+
+            }
+            //----------Div Day
+            DateTime fromDate = Convert.ToDateTime(fromdate);
+            DateTime toDate = Convert.ToDateTime(todate);
+            DateTime tempDate = fromDate;
+            foreach (var item in all)
+            {
+
+                result.Add(new RoomPrice()
+                {
+                    Ids = ids,
+                    fromdate = tempDate.ToString(),
+                    todate = tempDate.AddDays(item.daily_prices.Count()).ToString(),
+                    room_group_id = roomGroup,
+                    Price = item.daily_prices.Average(),
+                    Currency = currency
+
+
+                });
+                tempDate = tempDate.AddDays(item.daily_prices.Count() + 1);
+            }
+
+            return result;
+          
+        }
+
         private void UpdatePrice(List<RoomPrice> AllRoomPrice)
         {
             // Get all room Price in Excel and bind to object
@@ -341,10 +399,11 @@ namespace Ostrovok2Be
         
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-         /*   btn_continue.Text = "Started";
-            btn_continue.Enabled = false;*/
-
-            /*  pBar.Value = Math.Min(e.ProgressPercentage, 100);
+           /* btn_continue.Text = "Started";
+            btn_continue.Enabled = false;
+            
+            
+              pBar.Value = Math.Min(e.ProgressPercentage, 100);
             pBar.Update();*/
         }
         private void ExitProgram(object sender, EventArgs e)
@@ -675,16 +734,11 @@ namespace Ostrovok2Be
 
         public void GetHotelGeneral(List<string> allIds, int type = 0, int runtype = 0)
         {
-           /* process_lb.Text = "TASK: Get Hotel Info...";*/
-            //type =0 get by region_id
-         
-          
-            //--- STARTING TASK        
             //---1. GET VALUE FROM API
             var divedList = list2objbuilder.ListCreator(allIds, 10);
-            var listObj = new List<JToken>();
+            
             var value_Track = 0;
-            var totalPackage = new List<GeneralPackage>(); 
+          
             List<GeneraPackageObjByLang> collectGeneralPackage = new List<GeneraPackageObjByLang>();
             foreach (var tasklist in divedList)
             {
@@ -695,32 +749,34 @@ namespace Ostrovok2Be
                 var allHotelInStr = tempStr2Obj.listIds2Object();
               
                 object obj = new object();
-              
-                Task taskGetGeneralInfo =new Task(() =>
-                {
                     foreach (var lang in AllLangSelected)
                     {
-                      var tempdataPackage=GetGeneral.getGeneralHotelInforByIds(allHotelInStr, lang);
-                        lock (obj)
-                        {
-                            collectGeneralPackage.Add(
-                                new GeneraPackageObjByLang()
+                            Task taskGetGeneralInfo = new Task(() =>
+                            {
+                                var tempdataPackage=GetGeneral.getGeneralHotelInforByIds(allHotelInStr, lang);
+                          
+                                lock (obj)
                                 {
-                                    GeneralPackage =JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
-                                    lang = lang
-                                });
+                                    collectGeneralPackage.Add(
+                                        new GeneraPackageObjByLang()
+                                        {
+                                            GeneralPackage =JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
+                                            lang = lang
+                                        });
                            
-                        }
-                      
-                    }
-                });
-                taskGetGeneralInfo.Start();
-                taskGetGeneralInfo.Wait();
+                                }
+                            });
+                            taskGetGeneralInfo.Start();
+                            taskGetGeneralInfo.Wait();
+                }
+              
+                
               
             }
        
-           //----2.CREATE OBJECT
+           //----2.CREATE object
             var ListMiddleObject = new List<SupplierMidleObject>();
+            
             foreach (var packageByLang in collectGeneralPackage)
             {
 
