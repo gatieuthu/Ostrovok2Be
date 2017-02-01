@@ -157,8 +157,10 @@ namespace Ostrovok2Be
                             MessageBox.Show(" Plz select Ids");
                         }
             }
-           
-
+            
+           // Task.WaitAll(AllTasks.ToArray());
+            startbtn.Text = "Start";
+            startbtn.Enabled = true;
             
         }
 
@@ -703,12 +705,20 @@ namespace Ostrovok2Be
                       var tempdataPackage=GetGeneral.getGeneralHotelInforByIds(allHotelInStr, lang);
                         lock (obj)
                         {
-                            collectGeneralPackage.Add(
-                                new GeneraPackageObjByLang()
-                                {
-                                    GeneralPackage =JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
-                                    lang = lang
-                                });
+                            try
+                            {
+                                collectGeneralPackage.Add(
+                                    new GeneraPackageObjByLang()
+                                    {
+                                        GeneralPackage =
+                                            JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
+                                        lang = lang
+                                    });
+                            }
+                            catch (Exception m)
+                            {
+                                Debug.WriteLine("Errorrrr: "+m.Message);
+                            }
                            
                         }
                       
@@ -921,11 +931,14 @@ namespace Ostrovok2Be
                                                           Done = Convert.ToString(row["Done"]),
                                                           DateCreated = Convert.ToString(row["DateCreated"])
                                                       };
-                    allObjectDone.AddRange(oldLogs.Where(d=>d.Done=="1"));
+                    var temOldLog = oldLogs.Where(d => d.Done == "1");
+                    allObjectDone.AddRange(temOldLog);
+
                 }
             
             //---------------------Create new Emtpy Log base allids
                 List<LogObject> allEmptyLog = new List<LogObject>();
+                MessageBox.Show(List_Ids.Count().ToString());
                 foreach (var item in List_Ids)
                 {
                     allEmptyLog.Add(new LogObject()
@@ -933,15 +946,20 @@ namespace Ostrovok2Be
                         Ids=item
                     });
                 }
+
+                var test = allObjectDone.Count();
+                var testvalue = allObjectDone;
                 List<LogObject> allEmptyLog_Mapped = new List<LogObject>();
-             
+             //--collect all ids in objecdone:
+                var allIdsinObjecDone = allObjectDone.Select(c=>c.Ids);
 
                 foreach (var itemEmptyLog in allEmptyLog)
                 {
-                    if (allObjectDone.Select(c=>c.Ids).Where(m=>m==itemEmptyLog.Ids).Count() > 0)
+                    var temp_ids = itemEmptyLog.Ids;
+                    if (allIdsinObjecDone.Where(m => m == temp_ids).Count() > 0)
                     {
-                        var temp_value = itemEmptyLog.Ids;
-                        var tempMatchedObject = allObjectDone.Where(c => c.Ids == temp_value).FirstOrDefault();
+                        
+                        var tempMatchedObject = allObjectDone.Where(c => c.Ids == temp_ids).FirstOrDefault();
                         if (tempMatchedObject != null)
                         {
                             itemEmptyLog.InjectFrom<IgnoreNulls>(tempMatchedObject);
