@@ -82,6 +82,7 @@
     <Compile Include="ExtCode\ExcelExtLib.cs" />
     <Compile Include="ExtCode\IO.cs" />
     <Compile Include="ExtCode\MessageBoxManager.cs" />
+    <Compile Include="ExtCode\ObjectExtensions.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

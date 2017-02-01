@@ -32,27 +32,27 @@ namespace Ostrovok2Be
     public partial class Form1 : Form
     {
         //-------------DECLARE AREA--------------
-        public static int timeIdle=1000;
-        public static int runmode=0;
+        public static int timeIdle = 1000;
+        public static int runmode = 0;
         public static List<string> List_Ids = new List<string>();
-        public static string  pathLogGetPrice = @"../../Result/Log/Log-Price.xlsx";
-        public static string  pathLogGetGeneralInfo = @"../../Result/Log/Log-Info.xlsx";
+        public static string pathLogGetPrice = @"../../Result/Log/Log-Price.xlsx";
+        public static string pathLogGetGeneralInfo = @"../../Result/Log/Log-Info.xlsx";
         public static string pathRoomPrice = @"../../Result/RoomPrice/RoomPrice.xlsx";
         public static string pathGeneralHotelInfo = @"../../Result/GeneralHotelInfo/GeneralHotelInfoData.xlsx";
         public static string pathCountryList = @"../../Object/countrylist.txt";
-        public  string currentIds = "";
+        public string currentIds = "";
         public static bool pause = false;
         public ConcurrentBag<Task> AllTasks = new ConcurrentBag<Task>();
         public ConcurrentBag<string> allIdsDone = new ConcurrentBag<string>();
         public ConcurrentBag<LogObject> AllLogs = new ConcurrentBag<LogObject>();
         public static int idsPerUnit = 10;
-        public static List<string> AllCurrencyType =new List<string>();
-        public static List<string> AllLangSelected =new List<string>();
+        public static List<string> AllCurrencyType = new List<string>();
+        public static List<string> AllLangSelected = new List<string>();
         public static List<RoomPrice> AllRoomPrice = new List<RoomPrice>();
         public static string checkInDate;
         public static string checkOutDate;
         public static string connectStr = "";
-        public static int choosen_SaveType=0;
+        public static int choosen_SaveType = 0;
         public static bool startNew = true;
 
         //--------- COMPONENT EVENT---------------------------------------------------
@@ -64,8 +64,8 @@ namespace Ostrovok2Be
 
         private void Form1_Load(object sender, EventArgs e)
         {
-                dt_Fromdate.Value =Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"));
-           //--- set the time between 2 connections:
+            dt_Fromdate.Value = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"));
+            //--- set the time between 2 connections:
             timeIdle = Int32.Parse(idletime.Text);
             runmode = 0;
             string locationlist = File.ReadAllText(pathCountryList);
@@ -73,32 +73,32 @@ namespace Ostrovok2Be
             //------------------------
             if (File.Exists(pathLog))
             {
-            FileStream stream = File.Open(pathLog, FileMode.Open, FileAccess.Read);
-            IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-            excelReader.IsFirstRowAsColumnNames = true;
-            DataSet result1 = excelReader.AsDataSet();
-            IEnumerable<LogObject> allItemLog = from row in result1.Tables["Table1"].AsEnumerable()
-                                                select new LogObject()
-                                                {
-                                                    Ids = Convert.ToString(row["Ids"]),
-                                                    Done = Convert.ToString(row["Done"]),
-                                                    DateCreated = Convert.ToString(row["DateCreated"]),
-                                                    DateUpdated = Convert.ToString(row["DateUpdated"])
-                                                };
+                FileStream stream = File.Open(pathLog, FileMode.Open, FileAccess.Read);
+                IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                excelReader.IsFirstRowAsColumnNames = true;
+                DataSet result1 = excelReader.AsDataSet();
+                IEnumerable<LogObject> allItemLog = from row in result1.Tables["Table1"].AsEnumerable()
+                                                    select new LogObject()
+                                                    {
+                                                        Ids = Convert.ToString(row["Ids"]),
+                                                        Done = Convert.ToString(row["Done"]),
+                                                        DateCreated = Convert.ToString(row["DateCreated"]),
+                                                        DateUpdated = Convert.ToString(row["DateUpdated"])
+                                                    };
                 if (allItemLog.Count() > 0)
                 {
                     foreach (var item in allItemLog)
                     {
                         AllLogs.Add(item);
                     }
-                    
+
                 }
             }
-          
+
             //-----------------------
             using (WebClient wc = new WebClient())
             {
-               wc.Encoding = System.Text.Encoding.UTF8;
+                wc.Encoding = System.Text.Encoding.UTF8;
                 var country = JsonConvert.DeserializeObject<List<country>>(locationlist);
                 //--- clear checkbox list
                 countrylist.Items.Clear();
@@ -109,13 +109,13 @@ namespace Ostrovok2Be
                     ctrlist.Add(item.value);
                 }
             }
-            
+
             Console.WriteLine(" ids count:    " + List_Ids.Count());
 
         }
 
-      
-        private  void startbtn_Click(object sender, EventArgs e)
+
+        private void startbtn_Click(object sender, EventArgs e)
         {
             startbtn.Text = "Started";
             startbtn.Enabled = false;
@@ -124,44 +124,42 @@ namespace Ostrovok2Be
             var allIds = ListIdsCreator(1);
             //-- TASK: GET-GENERALINFO
             if (runmode == 1)
-            { 
-                     if (allIds.Count > 0)
-                        {
-                            
-                       
-                                        Task task = new Task(() => GetHotelGeneral(allIds, 0, runmode));
-                                        AllTasks.Add(task);
-                                        task.Start();
-                        
-           
-                      
-                         }
-                        else
-                        {
-                            MessageBox.Show(" Plz select Ids");
-                        }
+            {
+                if (allIds.Count > 0)
+                {
+
+
+                    Task task = new Task(() => GetHotelGeneral(allIds, 0, runmode));
+                    AllTasks.Add(task);
+                    task.Start();
+
+
+
+                }
+                else
+                {
+                    MessageBox.Show(" Plz select Ids");
+                }
             }
-           
+
             //--TASK GET-HOTELPRICE
             if (runmode == 2)
             {
                 if (allIds.Count > 0)
-                        {
-                             
-                                Task task = new Task(() => GetPrice());
-                                AllTasks.Add(task);
-                                task.Start();
-                        }
-                        else
-                        {
-                            MessageBox.Show(" Plz select Ids");
-                        }
+                {
+
+                    Task task = new Task(() => GetPrice());
+                    AllTasks.Add(task);
+                    task.Start();
+                }
+                else
+                {
+                    MessageBox.Show(" Plz select Ids");
+                }
             }
-            
-           // Task.WaitAll(AllTasks.ToArray());
-            startbtn.Text = "Start";
-            startbtn.Enabled = true;
-            
+
+
+
         }
 
 
@@ -171,19 +169,19 @@ namespace Ostrovok2Be
             if (cb_Rub.Checked)
             {
                 AllCurrencyType.Add("RUB");
-            }  
+            }
             if (cb_Usd.Checked)
             {
                 AllCurrencyType.Add("USD");
-            } 
+            }
             if (cb_Vnd.Checked)
             {
                 AllCurrencyType.Add("VND");
-            } 
+            }
             if (cb_Eur.Checked)
             {
                 AllCurrencyType.Add("EUR");
-            }  
+            }
             //--------------GetSelectLangquage
             if (cb_En.Checked)
             {
@@ -204,7 +202,7 @@ namespace Ostrovok2Be
                 runmode = 1;
 
             if (rd_getPrice.Checked)
-                runmode = 2; 
+                runmode = 2;
             if (rd_Auto.Checked)
                 runmode = 0;
             //---get Savetype in Default mode
@@ -221,98 +219,156 @@ namespace Ostrovok2Be
         }
         public void GetPrice()
         {
-           // ListIDS, LIST Lang, RunMode, List Currency
+            // ListIDS, LIST Lang, RunMode, List Currency
             List<RatesPackage> temp = new List<RatesPackage>();
             var allGroup = list2objbuilder.ListCreator(List_Ids, idsPerUnit);
             foreach (var itemGroup in allGroup)//---------> Loop in allUnit
-                   {
-               
-                                    List<Task> allTaskInGroupIds = new List<Task>();
-                                    var HotelInStr = new str2objbuilder(itemGroup).listIds2Object();
-                                    List<string> result_getRates = new List<string>();
-                                    List<RatesPackage> getRatesObject = new List<RatesPackage>();
+            {
 
-                                    object lockObj = new object();          
-                                    foreach (var currencyItem in AllCurrencyType)
-                                    {
-                                        //Request cac loai tien te.
-                                        Task<ReturnObject> getRatePackage = new Task<ReturnObject>(() => GetRate.getRateHotelInforByListOfIds(HotelInStr, checkInDate, checkOutDate, currencyItem));
-                                        getRatePackage.Start();
-                                       
-                                        //----------------
-                                        lock (lockObj)
-                                        {
-                                            if (getRatePackage.Result != null)
-                                            {
-                                                if (getRatePackage.Result.Code == 200)
-                                                {
-                                                    allTaskInGroupIds.Add(getRatePackage);
-                                                    result_getRates.Add(getRatePackage.Result.Result);
-                                                }
-                                                else
-                                                    pause = true;
-                                            }
-                                            
+                List<Task> allTaskInGroupIds = new List<Task>();
+                var HotelInStr = new str2objbuilder(itemGroup).listIds2Object();
+                List<string> result_getRates = new List<string>();
+                List<RatesPackage> getRatesObject = new List<RatesPackage>();
 
-                                        }
-                                    }
-                                    var allTaskInArray = allTaskInGroupIds.ToArray();
-                                    if (allTaskInArray.Length>0)
-                                        Task.WaitAll(allTaskInArray);
-                                    //---------------Map Object
-                                 foreach (var item in result_getRates) //Currency
-                                 {
-                                     
-                                        var tempRateObj = JsonConvert.DeserializeObject<RatesPackage>(item);
-                                        getRatesObject.Add(tempRateObj);
-                                        if (tempRateObj.result.hotels.Count() > 0)
-                                        {
-                                            List<RoomPrice> tempListRoomPrice = new List<RoomPrice>();
-                                            foreach (var rates in tempRateObj.result.hotels)//Hotels
-                                            {
-                                                foreach (var perRoom in rates.rates)//Room
-                                                {
-                                                     var tempRoomPrice = new RoomPrice()
-                                                    {
-                                                        Ids=rates.id,
-                                                        fromdate=checkInDate,
-                                                        todate=checkOutDate,
-                                                        Currency = perRoom.rate_currency,
-                                                        Price = perRoom.daily_prices.Average(),
-                                                        room_group_id = perRoom.room_group_id
-                                                    };
-                                                     tempListRoomPrice.Add(tempRoomPrice);
+                object lockObj = new object();
+                //fix select USD only
+                AllCurrencyType = new List<string>(new string[] { "USD" });
+                foreach (var currencyItem in AllCurrencyType)
+                {
+                    //Request cac loai tien te.
+                    Task<ReturnObject> getRatePackage = new Task<ReturnObject>(() => GetRate.getRateHotelInforByListOfIds(HotelInStr, checkInDate, checkOutDate, currencyItem));
+                    getRatePackage.Start();
 
-                                                }
-                                                var tempMinRoomPrice = tempListRoomPrice.Where(c=>c.Price==tempListRoomPrice.Select(p=>p.Price).Min()).FirstOrDefault();
-                                                if (tempMinRoomPrice != null)
-                                                {
-                                                    AllRoomPrice.Add(tempMinRoomPrice);
-                                                }
-                                               
-                                            }
-                                        }
-                                        
-                                    }
-                                  
-               
-
-                                    //-------------Save to Excel
-                                
-                       if (pause)
-                       {
-                           break;
-                       }
-                           
+                    //----------------
+                    lock (lockObj)
+                    {
+                        if (getRatePackage.Result != null)
+                        {
+                            if (getRatePackage.Result.Code == 200)
+                            {
+                                allTaskInGroupIds.Add(getRatePackage);
+                                result_getRates.Add(getRatePackage.Result.Result);
+                            }
+                            else
+                                pause = true;
+                        }
 
 
-                   }
+                    }
+                }
+                var allTaskInArray = allTaskInGroupIds.ToArray();
+                if (allTaskInArray.Length > 0)
+                    Task.WaitAll(allTaskInArray);
+                //---------------Map Object
+                foreach (var item in result_getRates) //Currency
+                {
+
+                    var tempRateObj = JsonConvert.DeserializeObject<RatesPackage>(item);
+                    getRatesObject.Add(tempRateObj);
+                    if (tempRateObj.result.hotels.Count() > 0)
+                    {
+                        List<RoomPrice> tempListRoomPrice = new List<RoomPrice>();
+                        foreach (var rates in tempRateObj.result.hotels)//Hotels
+                        {
+                            foreach (var perRoom in rates.rates)//Room
+                            {
+                                //---Kiem tra va tach ra nhieu roomprice neu can thiet
+                                List<RoomPrice> afterDived = CheckAndDivRoomPriceList(perRoom, rates.id, perRoom.room_group_id, "USD", checkInDate, checkOutDate);
+
+                                if (afterDived.Count > 0)
+                                    tempListRoomPrice.AddRange(afterDived);
+
+                            }
+                            var tempMinRoomPrice = tempListRoomPrice.Where(c => c.Price == tempListRoomPrice.Select(p => p.Price).Min()).FirstOrDefault();
+                            if (tempMinRoomPrice != null)
+                            {
+                                AllRoomPrice.Add(tempMinRoomPrice);
+                            }
+
+                        }
+                    }
+
+                }
+
+
+
+                //-------------Save to Excel
+
+                if (pause)
+                {
+                    break;
+                }
+
+
+
+            }
             if (startNew)
                 Begodi.CreateExcelFile.CreateExcelDocument(AllRoomPrice, pathRoomPrice);
             else
             {//append 
                 UpdatePrice(AllRoomPrice);
             }
+
+        }
+
+        private List<RoomPrice> CheckAndDivRoomPriceList(Rates a, string ids, int? roomGroup, string currency, string fromdate, string todate)
+        {
+            List<RoomPrice> result = new List<RoomPrice>();
+            List<Rates> all = new List<Rates>();
+            var temp = Begodi.ObjectExtensions.Copy(a);
+            temp.daily_prices.Clear();
+            int i = 0;
+            foreach (var item in a.daily_prices)
+            {
+                i++;
+                if (i == 1)
+                {
+                    temp.daily_prices.Add(item);
+                }
+                else
+                {
+                    if (temp.daily_prices.Count > 0)
+                    {
+                        if (temp.daily_prices.LastOrDefault() != item)
+                        {
+                            all.Add(temp);
+                            temp.daily_prices.Clear();
+                            temp.daily_prices.Add(item);
+                        }
+                        else
+                        {
+                            temp.daily_prices.Add(item);
+                        }
+                    }
+                }
+                if (i == a.daily_prices.Count())
+                {
+                    all.Add(temp);
+                }
+
+            }
+            //----------Div Day
+            DateTime fromDate = Convert.ToDateTime(fromdate);
+            DateTime toDate = Convert.ToDateTime(todate);
+            DateTime tempDate = fromDate;
+            foreach (var item in all)
+            {
+
+                result.Add(new RoomPrice()
+                {
+                    Ids = ids,
+                    fromdate = tempDate.ToString(),
+                    todate = tempDate.AddDays(item.daily_prices.Count()).ToString(),
+                    room_group_id = roomGroup,
+                    Price = item.daily_prices.Average(),
+                    Currency = currency
+
+
+                });
+                tempDate = tempDate.AddDays(item.daily_prices.Count() + 1);
+            }
+
+            return result;
 
         }
 
@@ -340,14 +396,15 @@ namespace Ostrovok2Be
 
 
         }
-        
+
         private void bgWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-         /*   btn_continue.Text = "Started";
-            btn_continue.Enabled = false;*/
+            /* btn_continue.Text = "Started";
+             btn_continue.Enabled = false;
 
-            /*  pBar.Value = Math.Min(e.ProgressPercentage, 100);
-            pBar.Update();*/
+
+               pBar.Value = Math.Min(e.ProgressPercentage, 100);
+             pBar.Update();*/
         }
         private void ExitProgram(object sender, EventArgs e)
         {
@@ -357,7 +414,7 @@ namespace Ostrovok2Be
         {
             startNew = false;
             getState();
-          var allIds=  ListIdsCreator(2);
+            var allIds = ListIdsCreator(2);
             var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
             var pathSouce = runmode == 1 ? pathGeneralHotelInfo : pathRoomPrice;
             if (runmode == 1)
@@ -391,10 +448,10 @@ namespace Ostrovok2Be
                     MessageBox.Show(" Plz select Ids");
                 }
             }
-            
-           
+
+
         }
-    
+
         private void btn_Connect_Click(object sender, EventArgs e)
         {
             btn_Connect.Text = "Connecting";
@@ -639,22 +696,22 @@ namespace Ostrovok2Be
             }
         }
 
-      
+
         private void btn_Pause_Click(object sender, EventArgs e)
         {
-            
+
 
             startbtn.Enabled = true;
             btn_continue.Enabled = true;
             pause = true;
-           Task.WaitAll(AllTasks.ToArray());
+            Task.WaitAll(AllTasks.ToArray());
             createNewLog();
-           
+
             //--------------
         }
 
         //------------METHODS-------------------------------------------------------------------------------------------
-     
+
         private List<string> getAllLangSelected()
         {
             var allSelectedLang = new List<string>();
@@ -662,7 +719,8 @@ namespace Ostrovok2Be
             {
                 var tem = "en";
                 allSelectedLang.Add(tem);
-            } if (cb_Ru.Checked)
+            }
+            if (cb_Ru.Checked)
             {
                 var tem = "ru";
                 allSelectedLang.Add(tem);
@@ -677,60 +735,49 @@ namespace Ostrovok2Be
 
         public void GetHotelGeneral(List<string> allIds, int type = 0, int runtype = 0)
         {
-           /* process_lb.Text = "TASK: Get Hotel Info...";*/
-            //type =0 get by region_id
-         
-          
-            //--- STARTING TASK        
             //---1. GET VALUE FROM API
             var divedList = list2objbuilder.ListCreator(allIds, 10);
-            var listObj = new List<JToken>();
+
             var value_Track = 0;
-            var totalPackage = new List<GeneralPackage>(); 
+
             List<GeneraPackageObjByLang> collectGeneralPackage = new List<GeneraPackageObjByLang>();
             foreach (var tasklist in divedList)
             {
-                 if (pause)
-                        break;
+                if (pause)
+                    break;
                 value_Track++;
                 var tempStr2Obj = new str2objbuilder(tasklist);
                 var allHotelInStr = tempStr2Obj.listIds2Object();
-              
+
                 object obj = new object();
-              
-                Task taskGetGeneralInfo =new Task(() =>
+                foreach (var lang in AllLangSelected)
                 {
-                    foreach (var lang in AllLangSelected)
+                    Task taskGetGeneralInfo = new Task(() =>
                     {
-                      var tempdataPackage=GetGeneral.getGeneralHotelInforByIds(allHotelInStr, lang);
+                        var tempdataPackage = GetGeneral.getGeneralHotelInforByIds(allHotelInStr, lang);
+
                         lock (obj)
                         {
-                            try
-                            {
-                                collectGeneralPackage.Add(
-                                    new GeneraPackageObjByLang()
-                                    {
-                                        GeneralPackage =
-                                            JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
-                                        lang = lang
-                                    });
-                            }
-                            catch (Exception m)
-                            {
-                                Debug.WriteLine("Errorrrr: "+m.Message);
-                            }
-                           
+                            collectGeneralPackage.Add(
+                                new GeneraPackageObjByLang()
+                                {
+                                    GeneralPackage = JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
+                                    lang = lang
+                                });
+
                         }
-                      
-                    }
-                });
-                taskGetGeneralInfo.Start();
-                taskGetGeneralInfo.Wait();
-              
+                    });
+                    taskGetGeneralInfo.Start();
+                    taskGetGeneralInfo.Wait();
+                }
+
+
+
             }
-       
-           //----2.CREATE OBJECT
+
+            //----2.CREATE object
             var ListMiddleObject = new List<SupplierMidleObject>();
+
             foreach (var packageByLang in collectGeneralPackage)
             {
 
@@ -781,41 +828,41 @@ namespace Ostrovok2Be
             }
             //----------2. MAP OBJECT
             var ListMiddleObject_Mapped = new List<SupplierMidleObject>();
-           // Map in ListMiddleObject
-                List<string> tempAllIds = ListMiddleObject.Select(ids => ids.SupplierOstIds).Distinct().ToList();
+            // Map in ListMiddleObject
+            List<string> tempAllIds = ListMiddleObject.Select(ids => ids.SupplierOstIds).Distinct().ToList();
             foreach (var itemIds in tempAllIds)
             {
                 var temp_mapped = new SupplierMidleObject();
-               
+
                 var allItemEquaIds = ListMiddleObject.Where(ids => ids.SupplierOstIds == itemIds).ToList();
                 foreach (var itemMiddleObj in allItemEquaIds)
                 {
-                    temp_mapped.InjectFrom <IgnoreNulls>(itemMiddleObj);
+                    temp_mapped.InjectFrom<IgnoreNulls>(itemMiddleObj);
                 }
                 if (temp_mapped != null)
                 {
                     ListMiddleObject_Mapped.Add(temp_mapped);
-                    
+
                 }
             }
 
-            
-            
+
+
             //-----3.SAVE OBJECT TO EXCEL
             /*process_lb.Text = "TASK: Save Exelfile";*/
             if (startNew)
             {
-                 Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject_Mapped, pathGeneralHotelInfo);
-            
+                Begodi.CreateExcelFile.CreateExcelDocument(ListMiddleObject_Mapped, pathGeneralHotelInfo);
+
             }
             else
             {// append data
                 UpdateGeneraInfo(ListMiddleObject_Mapped);
             }
             //----4. SAVE LOG
-            
+
             /*process_lb.Text = "TASK: Done";*/
-           
+
 
         }
 
@@ -826,42 +873,42 @@ namespace Ostrovok2Be
             IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
             excelReader.IsFirstRowAsColumnNames = true;
             List<SupplierMidleObject> allObjectDone = new List<SupplierMidleObject>();
-          
-                DataSet temp_result = excelReader.AsDataSet();
-                IEnumerable<SupplierMidleObject> ObjInfo = from row in temp_result.Tables["Table1"].AsEnumerable()
-                                                  select new SupplierMidleObject()
-                                                  {
 
-                                                      SupplierOstIds = Convert.ToString(row["SupplierOstIds"]),
-                                                      SupplierOstNameEn = Convert.ToString(row["SupplierOstNameEn"]),
-                                                      SupplierOstNameRu = Convert.ToString(row["SupplierOstNameRu"]),
-                                                      Policy_descriptionRu = Convert.ToString(row["Policy_descriptionRu"]),
-                                                      Policy_descriptionEn = Convert.ToString(row["Policy_descriptionEn"]),
-                                                      DescriptionEn = Convert.ToString(row["DescriptionEn"]),
-                                                      DescriptionRu = Convert.ToString(row["DescriptionRu"]),
-                                                      AmenitiesEn = Convert.ToString(row["AmenitiesEn"]),
-                                                      AmenitiesRu = Convert.ToString(row["AmenitiesRu"]),
-                                                      CountryEn = Convert.ToString(row["CountryEn"]),
-                                                      CountryRu = Convert.ToString(row["CountryRu"]),
-                                                      CityRu = Convert.ToString(row["CityRu"]),
-                                                      CityEn = Convert.ToString(row["CityEn"]),
-                                                      RegionId = Convert.ToString(row["RegionId"]),
-                                                      AddressEn = Convert.ToString(row["AddressEn"]),
-                                                      AddressRu = Convert.ToString(row["AddressRu"]),
-                                                      Adress_clean = Convert.ToString(row["Adress_clean"]),
-                                                      Thumbnail = Convert.ToString(row["Thumbnail"]),
-                                                      Lat = Convert.ToString(row["Lat"]),
-                                                      Long = Convert.ToString(row["Long"]),
-                                                      Country_code = Convert.ToString(row["Country_code"]),
-                                                      Kind = Convert.ToString(row["Kind"]),
-                                                      Phone = Convert.ToString(row["Phone"]),
-                                                      Email = Convert.ToString(row["Email"]),
-                                                      Images = Convert.ToString(row["Images"]),
-                                                      Contract_slug = Convert.ToString(row["Contract_slug"])
+            DataSet temp_result = excelReader.AsDataSet();
+            IEnumerable<SupplierMidleObject> ObjInfo = from row in temp_result.Tables["Table1"].AsEnumerable()
+                                                       select new SupplierMidleObject()
+                                                       {
 
-                                                  };
-                allObjectDone = ObjInfo.ToList();
-            
+                                                           SupplierOstIds = Convert.ToString(row["SupplierOstIds"]),
+                                                           SupplierOstNameEn = Convert.ToString(row["SupplierOstNameEn"]),
+                                                           SupplierOstNameRu = Convert.ToString(row["SupplierOstNameRu"]),
+                                                           Policy_descriptionRu = Convert.ToString(row["Policy_descriptionRu"]),
+                                                           Policy_descriptionEn = Convert.ToString(row["Policy_descriptionEn"]),
+                                                           DescriptionEn = Convert.ToString(row["DescriptionEn"]),
+                                                           DescriptionRu = Convert.ToString(row["DescriptionRu"]),
+                                                           AmenitiesEn = Convert.ToString(row["AmenitiesEn"]),
+                                                           AmenitiesRu = Convert.ToString(row["AmenitiesRu"]),
+                                                           CountryEn = Convert.ToString(row["CountryEn"]),
+                                                           CountryRu = Convert.ToString(row["CountryRu"]),
+                                                           CityRu = Convert.ToString(row["CityRu"]),
+                                                           CityEn = Convert.ToString(row["CityEn"]),
+                                                           RegionId = Convert.ToString(row["RegionId"]),
+                                                           AddressEn = Convert.ToString(row["AddressEn"]),
+                                                           AddressRu = Convert.ToString(row["AddressRu"]),
+                                                           Adress_clean = Convert.ToString(row["Adress_clean"]),
+                                                           Thumbnail = Convert.ToString(row["Thumbnail"]),
+                                                           Lat = Convert.ToString(row["Lat"]),
+                                                           Long = Convert.ToString(row["Long"]),
+                                                           Country_code = Convert.ToString(row["Country_code"]),
+                                                           Kind = Convert.ToString(row["Kind"]),
+                                                           Phone = Convert.ToString(row["Phone"]),
+                                                           Email = Convert.ToString(row["Email"]),
+                                                           Images = Convert.ToString(row["Images"]),
+                                                           Contract_slug = Convert.ToString(row["Contract_slug"])
+
+                                                       };
+            allObjectDone = ObjInfo.ToList();
+
             ListMiddleObject_Mapped.AddRange(allObjectDone);
             //----------- Save again
             ListIdsCreator(2);
@@ -882,29 +929,29 @@ namespace Ostrovok2Be
         {
             bool result = false;
             try
-            { 
-                var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
-            var pathSouce = runmode == 1 ? pathGeneralHotelInfo : pathRoomPrice;
-            //---------------Get List Ids was done on result file.
-
-            FileStream stream = File.Open(pathSouce, FileMode.Open, FileAccess.Read);
-            IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-            excelReader.IsFirstRowAsColumnNames = true;
-            List<LogObject> allObjectDone = new List<LogObject>();
-            if (runmode == 1)
             {
-                DataSet temp_result = excelReader.AsDataSet();
-                IEnumerable<LogObject> Log_done = from row in temp_result.Tables["Table1"].AsEnumerable()
-                                                  select new LogObject()
+                var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
+                var pathSouce = runmode == 1 ? pathGeneralHotelInfo : pathRoomPrice;
+                //---------------Get List Ids was done on result file.
+
+                FileStream stream = File.Open(pathSouce, FileMode.Open, FileAccess.Read);
+                IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                excelReader.IsFirstRowAsColumnNames = true;
+                List<LogObject> allObjectDone = new List<LogObject>();
+                if (runmode == 1)
+                {
+                    DataSet temp_result = excelReader.AsDataSet();
+                    IEnumerable<LogObject> Log_done = from row in temp_result.Tables["Table1"].AsEnumerable()
+                                                      select new LogObject()
                                                       {
                                                           Ids = Convert.ToString(row["SupplierOstIds"]),
-                                                          Done ="1",
+                                                          Done = "1",
                                                           DateCreated = DateTime.Now.ToString()
                                                       };
-                allObjectDone = Log_done.ToList();
-            }
-            else 
-                if (runmode == 2)
+                    allObjectDone = Log_done.ToList();
+                }
+                else
+                    if (runmode == 2)
                 {
                     DataSet temp_result = excelReader.AsDataSet();
                     IEnumerable<LogObject> Log_done = from row in temp_result.Tables["Table1"].AsEnumerable()
@@ -922,50 +969,42 @@ namespace Ostrovok2Be
                     FileStream stream2 = File.Open(pathLog, FileMode.Open, FileAccess.Read);
                     IExcelDataReader excelReader2 = ExcelReaderFactory.CreateOpenXmlReader(stream2);
                     excelReader2.IsFirstRowAsColumnNames = true;
-                    List<LogObject> OldLogObj= new List<LogObject>();
+                    List<LogObject> OldLogObj = new List<LogObject>();
                     DataSet olDataSet = excelReader2.AsDataSet();
                     IEnumerable<LogObject> oldLogs = from row in olDataSet.Tables["Table1"].AsEnumerable()
-                                                      select new LogObject()
-                                                      {
-                                                          Ids = Convert.ToString(row["Ids"]),
-                                                          Done = Convert.ToString(row["Done"]),
-                                                          DateCreated = Convert.ToString(row["DateCreated"])
-                                                      };
-                    var temOldLog = oldLogs.Where(d => d.Done == "1");
-                    allObjectDone.AddRange(temOldLog);
-
+                                                     select new LogObject()
+                                                     {
+                                                         Ids = Convert.ToString(row["Ids"]),
+                                                         Done = Convert.ToString(row["Done"]),
+                                                         DateCreated = Convert.ToString(row["DateCreated"])
+                                                     };
+                    allObjectDone.AddRange(oldLogs.Where(d => d.Done == "1"));
                 }
-            
-            //---------------------Create new Emtpy Log base allids
+
+                //---------------------Create new Emtpy Log base allids
                 List<LogObject> allEmptyLog = new List<LogObject>();
-                MessageBox.Show(List_Ids.Count().ToString());
                 foreach (var item in List_Ids)
                 {
                     allEmptyLog.Add(new LogObject()
                     {
-                        Ids=item
+                        Ids = item
                     });
                 }
-
-                var test = allObjectDone.Count();
-                var testvalue = allObjectDone;
                 List<LogObject> allEmptyLog_Mapped = new List<LogObject>();
-             //--collect all ids in objecdone:
-                var allIdsinObjecDone = allObjectDone.Select(c=>c.Ids);
+
 
                 foreach (var itemEmptyLog in allEmptyLog)
                 {
-                    var temp_ids = itemEmptyLog.Ids;
-                    if (allIdsinObjecDone.Where(m => m == temp_ids).Count() > 0)
+                    if (allObjectDone.Select(c => c.Ids).Where(m => m == itemEmptyLog.Ids).Count() > 0)
                     {
-                        
-                        var tempMatchedObject = allObjectDone.Where(c => c.Ids == temp_ids).FirstOrDefault();
+                        var temp_value = itemEmptyLog.Ids;
+                        var tempMatchedObject = allObjectDone.Where(c => c.Ids == temp_value).FirstOrDefault();
                         if (tempMatchedObject != null)
                         {
                             itemEmptyLog.InjectFrom<IgnoreNulls>(tempMatchedObject);
                             allEmptyLog_Mapped.Add(itemEmptyLog);
                         }
-                        
+
                     }
                     else
                     {
@@ -987,60 +1026,27 @@ namespace Ostrovok2Be
                 return false;
             }
 
-           
+
         }
-        
+
         #region Method for requesting..
         public List<string> getAllHotelByText(string textValue)
         {
             Trace.WriteLine(" Downloading: " + textValue);
-             if (string.IsNullOrEmpty(textValue))
-                return null;
-               try
-            {
-            System.Threading.Thread.Sleep(timeIdle);
-            var totalHotels = new List<string>();
-            string api_getAllHotelByLocationText = @"https://partner.ostrovok.ru/api/b2b/v2/region/hotel/list?data={""text"":""" + textValue + @"" + @""",""format"":""json""}";
-            api_getAllHotelByLocationText.Replace(@"\", "");
-            CookieContainer myContainer = new CookieContainer();
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(api_getAllHotelByLocationText);
-            request.Credentials = new NetworkCredential("1356", "f5df4f22-1277-44a7-a7fc-56b5b2de93da");
-            request.CookieContainer = myContainer;
-            request.PreAuthenticate = true;
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            StreamReader reader = new StreamReader(response.GetResponseStream());
-            string result = reader.ReadLine();
-            JObject hotelListobj = JObject.Parse(result);
-            string content_country = hotelListobj["result"]["ids"].ToString();
-            List<string> allHotels = JsonConvert.DeserializeObject<List<string>>(content_country);
-            return allHotels;
-            }
-               catch
-               {
-                   return null;
-               }
-
-        }
-        public List<string> getAllHotelByRegionId(string textValue)
-        {
-
-            Trace.WriteLine(" Downloading: "+textValue);
             if (string.IsNullOrEmpty(textValue))
                 return null;
-               try
+            try
             {
                 System.Threading.Thread.Sleep(timeIdle);
                 var totalHotels = new List<string>();
-                string api_getAllHotelByLocationText =
-                    @"https://partner.ostrovok.ru/api/b2b/v2/region/hotel/list?data={""region_id"":""" + textValue + @"" +
-                    @""",""format"":""json""}";
+                string api_getAllHotelByLocationText = @"https://partner.ostrovok.ru/api/b2b/v2/region/hotel/list?data={""text"":""" + textValue + @"" + @""",""format"":""json""}";
                 api_getAllHotelByLocationText.Replace(@"\", "");
                 CookieContainer myContainer = new CookieContainer();
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(api_getAllHotelByLocationText);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(api_getAllHotelByLocationText);
                 request.Credentials = new NetworkCredential("1356", "f5df4f22-1277-44a7-a7fc-56b5b2de93da");
                 request.CookieContainer = myContainer;
                 request.PreAuthenticate = true;
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 StreamReader reader = new StreamReader(response.GetResponseStream());
                 string result = reader.ReadLine();
                 JObject hotelListobj = JObject.Parse(result);
@@ -1052,10 +1058,43 @@ namespace Ostrovok2Be
             {
                 return null;
             }
-           
 
         }
-       
+        public List<string> getAllHotelByRegionId(string textValue)
+        {
+
+            Trace.WriteLine(" Downloading: " + textValue);
+            if (string.IsNullOrEmpty(textValue))
+                return null;
+            try
+            {
+                System.Threading.Thread.Sleep(timeIdle);
+                var totalHotels = new List<string>();
+                string api_getAllHotelByLocationText =
+                    @"https://partner.ostrovok.ru/api/b2b/v2/region/hotel/list?data={""region_id"":""" + textValue + @"" +
+                    @""",""format"":""json""}";
+                api_getAllHotelByLocationText.Replace(@"\", "");
+                CookieContainer myContainer = new CookieContainer();
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(api_getAllHotelByLocationText);
+                request.Credentials = new NetworkCredential("1356", "f5df4f22-1277-44a7-a7fc-56b5b2de93da");
+                request.CookieContainer = myContainer;
+                request.PreAuthenticate = true;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+                string result = reader.ReadLine();
+                JObject hotelListobj = JObject.Parse(result);
+                string content_country = hotelListobj["result"]["ids"].ToString();
+                List<string> allHotels = JsonConvert.DeserializeObject<List<string>>(content_country);
+                return allHotels;
+            }
+            catch
+            {
+                return null;
+            }
+
+
+        }
+
 
         public JToken getRatesByIds(string listIds)
         {// link demo: https://1356:f5df4f22-1277-44a7-a7fc-56b5b2de93da@partner.ostrovok.ru/api/b2b/v2/hotel/list?data={"ids":["dong_khanh_hotel"],"lang":"en"}
@@ -1126,24 +1165,24 @@ namespace Ostrovok2Be
             else
             {
                 var pathLog = runmode == 1 ? pathLogGetGeneralInfo : pathLogGetPrice;
-               // var pathSouce = runmode == 1 ? pathGeneralHotelInfo : pathRoomPrice;
+                // var pathSouce = runmode == 1 ? pathGeneralHotelInfo : pathRoomPrice;
                 //---------------Get List Ids was done on result file.
 
                 FileStream stream = File.Open(pathLog, FileMode.Open, FileAccess.Read);
                 IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
                 excelReader.IsFirstRowAsColumnNames = true;
                 List<LogObject> allLog = new List<LogObject>();
-               
-                    DataSet temp_result = excelReader.AsDataSet();
-                    IEnumerable<LogObject> Log_done = from row in temp_result.Tables["Table1"].AsEnumerable()
-                                                      select new LogObject()
-                                                      {
-                                                          Ids = Convert.ToString(row["Ids"]),
-                                                          Done = Convert.ToString(row["Done"]),
-                                                          DateCreated = Convert.ToString(row["DateCreated"])
-                                                      };
-                    allLog = Log_done.ToList();
-                result = allLog.Where(m=>m.Done!="1").Select(c=>c.Ids).ToList();
+
+                DataSet temp_result = excelReader.AsDataSet();
+                IEnumerable<LogObject> Log_done = from row in temp_result.Tables["Table1"].AsEnumerable()
+                                                  select new LogObject()
+                                                  {
+                                                      Ids = Convert.ToString(row["Ids"]),
+                                                      Done = Convert.ToString(row["Done"]),
+                                                      DateCreated = Convert.ToString(row["DateCreated"])
+                                                  };
+                allLog = Log_done.ToList();
+                result = allLog.Where(m => m.Done != "1").Select(c => c.Ids).ToList();
             }
             List_Ids = result;
             return result;
@@ -1168,7 +1207,7 @@ namespace Ostrovok2Be
         {
             lb_Info.Text = "";
         }
-       
+
 
         private void rdAuto_MouseHover(object sender, EventArgs e)
         {
@@ -1179,7 +1218,7 @@ namespace Ostrovok2Be
         {
             lb_Info.Text = "";
         }
- 
+
 
         private void radioButton2_MouseHover(object sender, EventArgs e)
         {
@@ -1188,7 +1227,7 @@ namespace Ostrovok2Be
 
         private void radioButton2_MouseLeave(object sender, EventArgs e)
         {
-            lb_Info.Text="";
+            lb_Info.Text = "";
         }
 
         private void rd_Check_MouseHover(object sender, EventArgs e)
@@ -1210,16 +1249,16 @@ namespace Ostrovok2Be
         {
             lb_Info.Text = "";
         }
-      
+
 
         private void countrylist_MouseClick(object sender, MouseEventArgs e)
         {
-            var selecteditem=countrylist.SelectedItem;
-            
+            var selecteditem = countrylist.SelectedItem;
+
             /*MessageBox.Show(selecteditem.ToString());*/
             /*countrylist.SetItemChecked(countrylist.SetItemChecked);*/
         }
-  
+
 
         private void dt_Fromdate_ValueChanged(object sender, EventArgs e)
         {
@@ -1234,36 +1273,36 @@ namespace Ostrovok2Be
             }
         }
         private void rd_GetGeneralInfo_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rd_GetGeneralInfo.Checked)
             {
-                if (rd_GetGeneralInfo.Checked)
-                {
-                    runmode = 1;
-                }
+                runmode = 1;
             }
+        }
 
-            private void rd_getPrice_CheckedChanged(object sender, EventArgs e)
+        private void rd_getPrice_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rd_getPrice.Checked)
             {
-                if (rd_getPrice.Checked)
-                {
-                    runmode = 2;
-                }
+                runmode = 2;
             }
+        }
 
-            private void rd_Auto_CheckedChanged(object sender, EventArgs e)
+        private void rd_Auto_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rd_Auto.Checked)
             {
-                if (rd_Auto.Checked)
-                {
-                    runmode = 0;
-                }
+                runmode = 0;
             }
+        }
 
-#endregion
+        #endregion
 
-    
-    
-       
 
-      
+
+
+
+
     }
-    
+
 }
