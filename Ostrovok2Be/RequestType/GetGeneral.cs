@@ -32,7 +32,7 @@ namespace Ostrovok2Be.RequestType
                         pause = true;
                     return new ReturnObject()
                     {
-                        Code = (int) (int) response.StatusCode,
+                        Code =  (int) response.StatusCode,
                         Result = result
                     };
                 }
@@ -43,10 +43,15 @@ namespace Ostrovok2Be.RequestType
 
 
             }
-            catch(Exception m)
+            catch(WebException m)
             {
-                MessageBox.Show(" Exxxception....."+m.Message);
-                return null;
+             
+               /* MessageBox.Show(" Exxxception....."+m.Message);*/
+                return new ReturnObject()
+                {
+                    Code =(int)m.Status,
+                    Result = m.Message
+                };
             }
         }
 

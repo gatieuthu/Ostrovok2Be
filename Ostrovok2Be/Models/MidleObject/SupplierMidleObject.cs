@@ -36,5 +36,6 @@
         public string Email { get; set; }
         public string Images { get; set; }
         public string Contract_slug { get; set; }
+        public string room_groups { get; set; }
     }
 }

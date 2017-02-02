@@ -570,14 +570,15 @@ namespace Ostrovok2Be
                                                                                Phone = Convert.ToString(row["Phone"]),
                                                                                Email = Convert.ToString(row["Email"]),
                                                                                Images = Convert.ToString(row["Images"]),
-                                                                               Contract_slug = Convert.ToString(row["Contract_slug"])
+                                                                               Contract_slug = Convert.ToString(row["Contract_slug"]),
+                                                                               room_groups = Convert.ToString(row["room_groups"])
 
                                                                            };
                     // Call store and insert database
                     foreach (var item in allOstrovokSupplier)
                     {
                         var Conn = new SqlConnection(connectStr);
-                        var P = new SqlParameter[26];
+                        var P = new SqlParameter[27];
                         P[0] = new SqlParameter("@SupplierOstIds", SqlDbType.NVarChar);
                         P[0].Value = item.SupplierOstIds;
                         P[1] = new SqlParameter("@SupplierOstNameEn", SqlDbType.NVarChar);
@@ -630,6 +631,8 @@ namespace Ostrovok2Be
                         P[24].Value = item.Images;
                         P[25] = new SqlParameter("@Contract_slug", SqlDbType.NVarChar);
                         P[25].Value = item.Contract_slug;
+                        P[26] = new SqlParameter("@room_groups", SqlDbType.NVarChar);
+                        P[26].Value = item.room_groups;
                         var dt = AE.SqlHelper.ExecuteDataTable(Conn, CommandType.StoredProcedure, "InsertOstrovokSupplier", P);
                     }
                 }
@@ -752,23 +755,64 @@ namespace Ostrovok2Be
                 object obj = new object();
                 foreach (var lang in AllLangSelected)
                 {
-                    Task taskGetGeneralInfo = new Task(() =>
-                    {
-                        var tempdataPackage = GetGeneral.getGeneralHotelInforByIds(allHotelInStr, lang);
 
-                        lock (obj)
+                   /* try
+                    {*/
+                        Task taskGetGeneralInfo = new Task(() =>
                         {
-                            collectGeneralPackage.Add(
-                                new GeneraPackageObjByLang()
+                            var tempdataPackage = GetGeneral.getGeneralHotelInforByIds(allHotelInStr, lang);
+                            if (tempdataPackage.Code != 429)
+                            {
+                                lock (obj)
                                 {
-                                    GeneralPackage = JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
-                                    lang = lang
-                                });
+                                    try
+                                    {
 
-                        }
-                    });
-                    taskGetGeneralInfo.Start();
-                    taskGetGeneralInfo.Wait();
+                                        collectGeneralPackage.Add(
+                                            new GeneraPackageObjByLang()
+                                            {
+                                                GeneralPackage =
+                                                    JsonConvert.DeserializeObject<GeneralPackage>(tempdataPackage.Result),
+                                                lang = lang
+                                            });
+                                    }
+                                    catch
+                                    {
+                                        try
+                                        {
+                                            ReturnObject m = tempdataPackage;
+                                            if (m.Code == 429)
+                                            {
+                                                // save data
+                                                MessageBox.Show("Saving data !");
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            MessageBox.Show("Saving all data !");
+                                        }
+
+
+                                    }
+
+
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine("Delay 10s");
+                                System.Threading.Thread.Sleep(1000);
+                            }
+                          
+                        });
+                        taskGetGeneralInfo.Start();
+                        taskGetGeneralInfo.Wait();
+                  /*  }
+                    catch(Exception  m)
+                    {
+                        Debug.WriteLine(" Bug at : "+m.Message);
+                    }*/
+                      
                 }
 
 
@@ -821,6 +865,8 @@ namespace Ostrovok2Be
                         SupplierOstNameRu = packageByLang.lang == "ru" ? item.name : null,
                         AddressEn = packageByLang.lang == "en" ? item.address : null,
                         AddressRu = packageByLang.lang == "ru" ? item.address : null,
+                        room_groups=item.room_groups==null?"":JsonConvert.SerializeObject(item.room_groups)
+
                     };
                     ListMiddleObject.Add(temMidleObject);
                 }
@@ -904,7 +950,8 @@ namespace Ostrovok2Be
                                                            Phone = Convert.ToString(row["Phone"]),
                                                            Email = Convert.ToString(row["Email"]),
                                                            Images = Convert.ToString(row["Images"]),
-                                                           Contract_slug = Convert.ToString(row["Contract_slug"])
+                                                           Contract_slug = Convert.ToString(row["Contract_slug"]),
+                                                           room_groups = Convert.ToString(row["room_groups"])
 
                                                        };
             allObjectDone = ObjInfo.ToList();
