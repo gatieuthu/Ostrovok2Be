@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Windows.Forms;
 using Ostrovok2Be.Models;
 
 namespace Ostrovok2Be.RequestType
@@ -30,7 +32,7 @@ namespace Ostrovok2Be.RequestType
                         pause = true;
                     return new ReturnObject()
                     {
-                        Code = (int) (int) response.StatusCode,
+                        Code =  (int) response.StatusCode,
                         Result = result
                     };
                 }
@@ -41,9 +43,15 @@ namespace Ostrovok2Be.RequestType
 
 
             }
-            catch
+            catch(WebException m)
             {
-                return null;
+             
+               /* MessageBox.Show(" Exxxception....."+m.Message);*/
+                return new ReturnObject()
+                {
+                    Code =(int)m.Status,
+                    Result = m.Message
+                };
             }
         }
 

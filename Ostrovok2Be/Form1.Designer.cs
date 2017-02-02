@@ -499,10 +499,10 @@
             this.rd_SaveGen.Checked = true;
             this.rd_SaveGen.Location = new System.Drawing.Point(140, 101);
             this.rd_SaveGen.Name = "rd_SaveGen";
-            this.rd_SaveGen.Size = new System.Drawing.Size(163, 17);
+            this.rd_SaveGen.Size = new System.Drawing.Size(119, 17);
             this.rd_SaveGen.TabIndex = 9;
             this.rd_SaveGen.TabStop = true;
-            this.rd_SaveGen.Text = "Save Generation Hotel to DB";
+            this.rd_SaveGen.Text = "Save the Info to DB";
             this.rd_SaveGen.UseVisualStyleBackColor = true;
             this.rd_SaveGen.CheckedChanged += new System.EventHandler(this.rd_SaveGen_CheckedChanged);
             // 

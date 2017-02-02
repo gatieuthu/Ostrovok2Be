@@ -8,7 +8,7 @@ namespace Ostrovok2Be.Models
 {
     public class ReturnObject
     {
-        public int? Code { get; set; }
+        public int Code { get; set; }
         public string Result { get; set; }
     }
 }
